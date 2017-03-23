@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/connect"
+        android:icon="@drawable/ic_connect"
+        android:title="连接"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/update"
+        android:title="上传"
+        android:icon="@drawable/ic_update"
+        app:showAsAction="always" />
+    <item
+        android:icon="@drawable/ic_settings"
+        android:title="设置"
+        android:id="@+id/settings"
+        app:showAsAction="never" />
+</menu>
