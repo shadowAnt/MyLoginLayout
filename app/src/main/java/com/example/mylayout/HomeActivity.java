@@ -1,5 +1,6 @@
 package com.example.mylayout;
 
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -8,9 +9,10 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener{
 
     private DrawerLayout mDrawerLayout;
 
@@ -28,6 +30,27 @@ public class HomeActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         }
+
+        //获取滑动菜单的实例，设置默认选中首页，并设置监听器
+        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
+        navView.setCheckedItem(R.id.nav_home);
+        navView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    public void onClick(View v){
+
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item){//滑动菜单的点击效果
+        switch (item.getItemId()){
+            case R.id.nav_home:
+                mDrawerLayout.closeDrawers();
+                break;
+            default:
+        }
+        return true;
     }
 
     public boolean onCreateOptionsMenu(Menu menu){
@@ -35,9 +58,8 @@ public class HomeActivity extends AppCompatActivity {
         return true;
     }
 
-    //定义菜栏上的点击事件
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item){//定义菜栏上的点击事件
         switch (item.getItemId()){
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);

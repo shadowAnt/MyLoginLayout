@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:title="首页"
+            android:icon="@drawable/nav_home"
+            android:id="@+id/nav_home"/>
+        <item
+            android:title="一键拨号"
+            android:icon="@drawable/nav_call"
+            android:id="@+id/nav_call"/>
+        <item
+            android:title="天气"
+            android:icon="@drawable/nav_weather"
+            android:id="@+id/nav_weather"/>
+        <item
+            android:title="健康资讯"
+            android:icon="@drawable/nav_zhihu"
+            android:id="@+id/nav_zhihu"/>
+    </group>
+</menu>

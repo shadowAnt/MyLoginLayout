@@ -25,13 +25,13 @@
 
     </LinearLayout>
 
-    <TextView
+    <android.support.design.widget.NavigationView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/nav_view"
         android:layout_gravity="start"
-        android:text="这是侧拉栏"
-        android:textSize="60sp"
-        android:background="#fff"/>
+        app:menu="@menu/nav_menu"
+        app:headerLayout="@layout/nav_header" />
 
 </android.support.v4.widget.DrawerLayout>
 
