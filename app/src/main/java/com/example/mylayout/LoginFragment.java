@@ -28,6 +28,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     private AutoCompleteTextView accountEdit;
     private AutoCompleteTextView passwordEdit;
 
+    private String account;
+    private String password;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.login_fragment, container, false);
@@ -50,12 +53,14 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
             case R.id.login:
                 progressBar.setVisibility(View.VISIBLE);
 
+                account = accountEdit.getText().toString();
+                password = passwordEdit.getText().toString();
                 save_account_password();//保存
                 Toast.makeText(getActivity(), "登录成功 !", Toast.LENGTH_SHORT).show();
 
                 //点击按钮生成一个Intent，传递信息给HomeActivity
                 Intent intent = new Intent(getActivity(), HomeActivity.class);
-                intent.putExtra("send", "登录成功!");
+                intent.putExtra("account", account);
                 startActivity(intent);
 
                 //结束掉登录界面活动
@@ -67,26 +72,21 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
     public void load_account_password(){
         boolean isRemember = pref.getBoolean("remember_password",false);
+        account = pref.getString("account", "");
+        accountEdit.setText(account);
         if(isRemember){
-            String account = pref.getString("account", "");
-            String password = pref.getString("password", "");
-            accountEdit.setText(account);
+            password = pref.getString("password", "");
             passwordEdit.setText(password);
             rememberPass.setChecked(true);
         }
     }
 
     public void save_account_password(){
-        String account = accountEdit.getText().toString();
-        String password = passwordEdit.getText().toString();
-
         editor = pref.edit();
+        editor.putString("account", account);
         if(rememberPass.isChecked()){
             editor.putBoolean("remember_password", true);
-            editor.putString("account", account);
             editor.putString("password", password);
-        } else {
-            editor.clear();
         }
         editor.apply();//将数据保存，异步，比commit快
     }
