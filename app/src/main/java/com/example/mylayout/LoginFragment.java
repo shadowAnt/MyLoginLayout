@@ -14,6 +14,8 @@ import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import space.wangjiang.toaster.Toaster;
+
 /**
  * Created by ShadowAnt on 2017/3/21.
  */
@@ -56,7 +58,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 account = accountEdit.getText().toString();
                 password = passwordEdit.getText().toString();
                 save_account_password();//保存
-                Toast.makeText(getActivity(), "登录成功 !", Toast.LENGTH_SHORT).show();
+                Toaster.success(getActivity(), "登录成功 !", Toast.LENGTH_SHORT).show();
 
                 //点击按钮生成一个Intent，传递信息给HomeActivity
                 Intent intent = new Intent(getActivity(), HomeActivity.class);
