@@ -96,6 +96,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
                 break;
             case R.id.nav_weather:
+                Intent intent = new Intent(HomeActivity.this, Main2Activity.class);
+                startActivity(intent);
                 break;
             default:
         }

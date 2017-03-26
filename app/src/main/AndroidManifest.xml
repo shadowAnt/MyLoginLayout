@@ -4,8 +4,10 @@
     package="com.example.mylayout">
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name="org.litepal.LitePalApplication"
         tools:replace="android:icon, android:theme, android:label"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
