@@ -56,6 +56,7 @@ public class ChooseAreaFragment extends Fragment {
 
     private Province selectedProvince;
     private City selectedCity;
+    private County selectedCounty;
 
     private int currentLevel;
 
@@ -87,7 +88,11 @@ public class ChooseAreaFragment extends Fragment {
                 } else if(currentLevel == LEVEL_CITY){
                     selectedCity = cityList.get(position);
                     queryCounties();
+                } else if(currentLevel == LEVEL_COUNTY){
+                    selectedCounty = countyList.get(position);
+                    //根据获取到的选中县级对象的weatherId组装成Url去获取天气信息
                 }
+                showResponse.setText(String.valueOf(currentLevel));
             }
         });
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -95,8 +100,10 @@ public class ChooseAreaFragment extends Fragment {
             public void onClick(View view) {
                 if(currentLevel == LEVEL_COUNTY){
                     queryCities();
+                    showResponse.setText(String.valueOf(currentLevel));
                 } else if(currentLevel == LEVEL_CITY){
                     queryProvinces();
+                    showResponse.setText(String.valueOf(currentLevel));
                 } else if(currentLevel == LEVEL_PROVINCE){
                     getActivity().finish();
                 }
@@ -126,8 +133,7 @@ public class ChooseAreaFragment extends Fragment {
     public void queryCities(){
         titleText.setText(selectedProvince.getProvinceName());
         backButton.setVisibility(View.VISIBLE);
-        cityList = DataSupport.where("provinceid = ?", String.valueOf(selectedProvince.getId()))
-                .find(City.class);
+        cityList = DataSupport.where("provinceid = ?", String.valueOf(selectedProvince.getId())).find(City.class);
         if(cityList.size() > 0){
             dataList.clear();
             for(City city : cityList){
@@ -146,7 +152,7 @@ public class ChooseAreaFragment extends Fragment {
     public void queryCounties(){
         titleText.setText(selectedCity.getCityName());
         backButton.setVisibility(View.VISIBLE);
-        countyList = DataSupport.where("cityid = ?", String.valueOf(selectedCity.getCityCode())).find(County.class);
+        countyList = DataSupport.where("cityid = ?", String.valueOf(selectedCity.getId())).find(County.class);
         if(countyList.size() > 0){
             dataList.clear();
             for(County county : countyList){
@@ -187,15 +193,17 @@ public class ChooseAreaFragment extends Fragment {
                     Log.d("onResponse", responseText);
                     result = Utilty.handleProvinceResponses(responseText);
                 } else if ("city".equals(type)){
+                    Log.d("onResponse", responseText);
                     result = Utilty.handleCityResponses(responseText, selectedProvince.getId());
                 } else if("county".equals(type)){
+                    Log.d("onResponse", responseText);
                     result = Utilty.handleCountyResponses(responseText, selectedCity.getId());
                 }
                 if(result){
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            showResponse.setText("加载成功");
+                            showResponse.setText(String.valueOf(currentLevel));
                             closeProgressDialog();
                             if("province".equals(type)){
                                 queryProvinces();
@@ -214,7 +222,20 @@ public class ChooseAreaFragment extends Fragment {
     private void showProgressDialog(){
         if(progressDialog == null){
             progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setMessage("正在努力加载...");
+            switch(currentLevel){
+                case LEVEL_PROVINCE:
+                    progressDialog.setMessage("正在努力加载市级信息...");
+                    break;
+                case LEVEL_CITY:
+                    progressDialog.setMessage("正在努力加载县级信息...");
+                    break;
+                case LEVEL_COUNTY:
+                    progressDialog.setMessage("正在努力加载天气信息...");
+                    break;
+                default:
+                    break;
+            }
+
             progressDialog.setCanceledOnTouchOutside(false);
         }
         progressDialog.show();
