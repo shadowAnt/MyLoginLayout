@@ -11,9 +11,13 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
 import space.wangjiang.toaster.Toaster;
 
 /**
@@ -29,6 +33,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     private CheckBox rememberPass;
     private AutoCompleteTextView accountEdit;
     private AutoCompleteTextView passwordEdit;
+
+    private ImageView gaosiLogin;
 
     private String account;
     private String password;
@@ -46,6 +52,16 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         accountEdit = (AutoCompleteTextView) view.findViewById(R.id.name);
         passwordEdit = (AutoCompleteTextView) view.findViewById(R.id.password);
         load_account_password();
+
+        //高斯模糊
+        gaosiLogin = (ImageView) view.findViewById(R.id.gaosi_login);
+        Glide.with(getActivity())
+                .load(R.drawable.icon_user)
+                .crossFade(1000)
+                .placeholder(R.drawable.icon_user)
+                .bitmapTransform(new BlurTransformation(getActivity(),23,4)) // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
+                .into(gaosiLogin);
+
         return view;
     }
 

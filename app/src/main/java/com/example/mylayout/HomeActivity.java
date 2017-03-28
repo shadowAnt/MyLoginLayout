@@ -2,8 +2,10 @@ package com.example.mylayout;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -15,16 +17,22 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.LayoutInflater;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.example.mylayout.gson.Weather;
+import com.example.mylayout.util.Utilty;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -56,7 +64,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         username.setText(account);
 
         TextView welcome = (TextView) findViewById(R.id.status);
-        welcome.setText(welcome.getText()+"\n欢迎 用户:"+account);
+        welcome.setText("欢迎 用户:"+account);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -80,6 +88,24 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         recyclerView.setLayoutManager(layoutManager);
         adapter = new FunAdapter(funList);
         recyclerView.setAdapter(adapter);
+
+        //解析天气信息
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String weatherString = preferences.getString("weather", null);
+        Weather weather = Utilty.handleWeatherResponse(weatherString);
+        TextView suggestionText = (TextView) findViewById(R.id.suggestion_text);
+        suggestionText.setText("  " + weather.suggestion.flu.txt + "\n  " + weather.suggestion.sport.txt);
+        TextView degreeText = (TextView) headerView.findViewById(R.id.now_weather);
+        degreeText.setText(weather.basic.city+"  " + weather.now.tmp + "℃");
+
+        //高斯模糊
+        ImageView bingPicHome = (ImageView) findViewById(R.id.bing_pic_home);
+        Glide.with(HomeActivity.this)
+                .load("https://www.dujin.org/sys/bing/1920.php")
+                .crossFade(1000)
+                .placeholder(R.drawable.bing_cache)
+                .bitmapTransform(new BlurTransformation(HomeActivity.this,23,4)) // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
+                .into(bingPicHome);
     }
 
     @Override

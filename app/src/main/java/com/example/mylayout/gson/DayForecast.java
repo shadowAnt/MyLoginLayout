@@ -18,25 +18,25 @@ public class DayForecast {
     public Wind wind;
 
     public class Astro{
-        String mr;
-        String ms;
-        String sr;
-        String ss;
+        public String mr;
+        public String ms;
+        public String sr;
+        public String ss;
     }
     public class Cond{
-        String code_d;
-        String code_n;
-        String txt_d;
-        String txt_n;
+        public String code_d;
+        public String code_n;
+        public String txt_d;
+        public String txt_n;
     }
     public class Tmp{
-        String max;
-        String min;
+        public String max;
+        public String min;
     }
     public class Wind{
-        String deg;
-        String dir;
-        String sc;
-        String spd;
+        public String deg;
+        public String dir;
+        public String sc;
+        public String spd;
     }
 }

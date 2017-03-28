@@ -14,13 +14,13 @@ public class HourForecast {
     public Wind wind;
 
     public class Cond{
-        String code;
-        String txt;
+        public String code;
+        public String txt;
     }
     public class Wind{
-        String deg;
-        String dir;
-        String sc;
-        String spd;
+        public String deg;
+        public String dir;
+        public String sc;
+        public String spd;
     }
 }

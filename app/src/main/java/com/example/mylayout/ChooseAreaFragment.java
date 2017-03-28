@@ -2,6 +2,7 @@ package com.example.mylayout;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import com.example.mylayout.db.City;
 import com.example.mylayout.db.County;
 import com.example.mylayout.db.Province;
+import com.example.mylayout.gson.Weather;
 import com.example.mylayout.util.HttpUtil;
 import com.example.mylayout.util.Utilty;
 
@@ -56,7 +58,6 @@ public class ChooseAreaFragment extends Fragment {
 
     private Province selectedProvince;
     private City selectedCity;
-    private County selectedCounty;
 
     private int currentLevel;
 
@@ -77,7 +78,6 @@ public class ChooseAreaFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-        //queryFromServer("http://guolin.tech/api/china", "province");
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
@@ -89,8 +89,19 @@ public class ChooseAreaFragment extends Fragment {
                     selectedCity = cityList.get(position);
                     queryCounties();
                 } else if(currentLevel == LEVEL_COUNTY){
-                    selectedCounty = countyList.get(position);
-                    //根据获取到的选中县级对象的weatherId组装成Url去获取天气信息
+                    String weatherId = countyList.get(position).getWeatherId();
+                    if(getActivity() instanceof Main2Activity){
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                        //根据获取到的选中县级对象的weatherId组装成Url去获取天气信息
+                    } else if(getActivity() instanceof WeatherActivity){
+                        WeatherActivity weatherActivity = (WeatherActivity)getActivity();
+                        weatherActivity.drawerLayout.closeDrawers();
+                        weatherActivity.swipeRefresh.setRefreshing(true);
+                        weatherActivity.requestWeather(weatherId);
+                    }
                 }
                 showResponse.setText(String.valueOf(currentLevel));
             }
@@ -114,7 +125,7 @@ public class ChooseAreaFragment extends Fragment {
 
     public void queryProvinces(){
         titleText.setText("中国");
-        backButton.setVisibility(View.VISIBLE);
+
         provinceList = DataSupport.findAll(Province.class);
         if(provinceList.size() > 0){
             dataList.clear();
@@ -173,10 +184,11 @@ public class ChooseAreaFragment extends Fragment {
         showProgressDialog();
         HttpUtil.sendOKHttpResquest(address, new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(Call call,final IOException e) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        e.printStackTrace();
                         Toaster.error(getActivity(), "加载失败",Toaster.LENGTH_SHORT).show();
                         showResponse.setText("加载失败");
                         closeProgressDialog();
@@ -222,20 +234,7 @@ public class ChooseAreaFragment extends Fragment {
     private void showProgressDialog(){
         if(progressDialog == null){
             progressDialog = new ProgressDialog(getActivity());
-            switch(currentLevel){
-                case LEVEL_PROVINCE:
-                    progressDialog.setMessage("正在努力加载市级信息...");
-                    break;
-                case LEVEL_CITY:
-                    progressDialog.setMessage("正在努力加载县级信息...");
-                    break;
-                case LEVEL_COUNTY:
-                    progressDialog.setMessage("正在努力加载天气信息...");
-                    break;
-                default:
-                    break;
-            }
-
+            progressDialog.setMessage("正在努力加载...");
             progressDialog.setCanceledOnTouchOutside(false);
         }
         progressDialog.show();

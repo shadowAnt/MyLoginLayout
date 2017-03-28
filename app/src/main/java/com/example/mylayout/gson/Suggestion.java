@@ -14,35 +14,35 @@ public class Suggestion {
     public Trav trav;
     public Uv uv;
     public class Air{
-        String brf;
-        String txt;
+        public String brf;
+        public String txt;
     }
     public class Comf{
-        String brf;
-        String txt;
+        public String brf;
+        public String txt;
     }
     public class Cw{
-        String brf;
-        String txt;
+        public String brf;
+        public String txt;
     }
     public class Drsg{
-        String brf;
-        String txt;
+        public String brf;
+        public String txt;
     }
     public class Flu{
-        String brf;
-        String txt;
+        public String brf;
+        public String txt;
     }
     public class Sport{
-        String brf;
-        String txt;
+        public String brf;
+        public String txt;
     }
     public class Trav{
-        String brf;
-        String txt;
+        public String brf;
+        public String txt;
     }
     public class Uv{
-        String brf;
-        String txt;
+        public String brf;
+        public String txt;
     }
 }
