@@ -24,16 +24,14 @@ import space.wangjiang.toaster.Toaster;
  * Created by ShadowAnt on 2017/3/21.
  */
 
-public class LoginFragment extends Fragment implements View.OnClickListener{
+public class LoginFragment extends Fragment implements View.OnClickListener {
 
     private ProgressBar progressBar;
-
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private CheckBox rememberPass;
     private AutoCompleteTextView accountEdit;
     private AutoCompleteTextView passwordEdit;
-
     private ImageView gaosiLogin;
 
     private String account;
@@ -46,12 +44,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         Button login = (Button) view.findViewById(R.id.login);
         login.setOnClickListener(this);
         progressBar = (ProgressBar) view.findViewById(R.id.login_progress);
-
-        pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         rememberPass = (CheckBox) view.findViewById(R.id.remember_pass);
         accountEdit = (AutoCompleteTextView) view.findViewById(R.id.name);
         passwordEdit = (AutoCompleteTextView) view.findViewById(R.id.password);
-        load_account_password();
+
+        pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        load_account_password();//加载用户名，根据上次保存密码与否进行读入密码
 
         //高斯模糊
         gaosiLogin = (ImageView) view.findViewById(R.id.gaosi_login);
@@ -59,26 +57,26 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 .load(R.drawable.icon_user)
                 .crossFade(1000)
                 .placeholder(R.drawable.icon_user)
-                .bitmapTransform(new BlurTransformation(getActivity(),23,4)) // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
+                .bitmapTransform(new BlurTransformation(getActivity(), 23, 4)) // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
                 .into(gaosiLogin);
 
         return view;
     }
 
     @Override
-    public void onClick(View v){
+    public void onClick(View v) {
         switch (v.getId()) {
             case R.id.login:
-                progressBar.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);//让进度条显示
 
                 account = accountEdit.getText().toString();
-                password = passwordEdit.getText().toString();
+                password = passwordEdit.getText().toString();//得到输入的用户名和密码
                 save_account_password();//保存
                 Toaster.success(getActivity(), "登录成功 !", Toast.LENGTH_SHORT).show();
 
                 //点击按钮生成一个Intent，传递信息给HomeActivity
                 Intent intent = new Intent(getActivity(), HomeActivity.class);
-                intent.putExtra("account", account);
+                intent.putExtra("account", account);//首页会用到用户名
                 startActivity(intent);
 
                 //结束掉登录界面活动
@@ -88,21 +86,22 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         }
     }
 
-    public void load_account_password(){
-        boolean isRemember = pref.getBoolean("remember_password",false);
+    public void load_account_password() {
+        boolean isRemember = pref.getBoolean("remember_password", false);
+        //用户名加载进来
         account = pref.getString("account", "");
         accountEdit.setText(account);
-        if(isRemember){
+        if (isRemember) {
             password = pref.getString("password", "");
             passwordEdit.setText(password);
-            rememberPass.setChecked(true);
+            rememberPass.setChecked(true);//启动的时候把对钩打上
         }
     }
 
-    public void save_account_password(){
+    public void save_account_password() {
         editor = pref.edit();
-        editor.putString("account", account);
-        if(rememberPass.isChecked()){
+        editor.putString("account", account);//无脑存储用户名
+        if (rememberPass.isChecked()) {//根据记住密码与否存储密码
             editor.putBoolean("remember_password", true);
             editor.putString("password", password);
         }

@@ -33,8 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
+import space.wangjiang.toaster.Toaster;
 
-public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout mDrawerLayout;
     private NavigationView navView;
@@ -57,14 +58,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_home);
 
         Intent intent = getIntent();
-        account = intent.getStringExtra("account");
+        account = intent.getStringExtra("account");//读取登陆活动传过来的用户名
         navView = (NavigationView) findViewById(R.id.nav_view);
-        View headerView = navView.getHeaderView(0);
-        TextView username = (TextView)headerView. findViewById(R.id.username);
+        View headerView = navView.getHeaderView(0);//setContentView把View设置为activity_home，但是滑动窗口在nav_view中
+        TextView username = (TextView) headerView.findViewById(R.id.username);//重点
         username.setText(account);
 
         TextView welcome = (TextView) findViewById(R.id.status);
-        welcome.setText("欢迎 用户:"+account);
+        welcome.setText("欢迎 用户:" + account);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -72,7 +73,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         //获取滑动菜单的实例，设置默认选中首页，并设置监听器
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         }
@@ -80,7 +81,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         navView.setNavigationItemSelectedListener(this);
 
         //卡片式布局
-       for(int i=0; i<funs.length; i++){
+        for (int i = 0; i < funs.length; i++) {
             funList.add(funs[i]);
         }
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -90,13 +91,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         recyclerView.setAdapter(adapter);
 
         //解析天气信息
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String weatherString = preferences.getString("weather", null);
-        Weather weather = Utilty.handleWeatherResponse(weatherString);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        String weatherString = pref.getString("weather", null);
         TextView suggestionText = (TextView) findViewById(R.id.suggestion_text);
-        suggestionText.setText("  " + weather.suggestion.flu.txt + "\n  " + weather.suggestion.sport.txt);
         TextView degreeText = (TextView) headerView.findViewById(R.id.now_weather);
-        degreeText.setText(weather.basic.city+"  " + weather.now.tmp + "℃");
+        if (weatherString != null) {
+            Weather weather = Utilty.handleWeatherResponse(weatherString);
+            suggestionText.setText("  " + weather.suggestion.flu.txt + "\n  " + weather.suggestion.sport.txt);
+            degreeText.setText(weather.basic.city + "  " + weather.now.tmp + "℃");
+        } else {
+            suggestionText.setText("  暂无天气信息，请首先在侧拉栏获取天气信息");
+        }
 
         //高斯模糊
         ImageView bingPicHome = (ImageView) findViewById(R.id.bing_pic_home);
@@ -104,50 +109,50 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 .load("https://www.dujin.org/sys/bing/1920.php")
                 .crossFade(1000)
                 .placeholder(R.drawable.bing_cache)
-                .bitmapTransform(new BlurTransformation(HomeActivity.this,23,4)) // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
+                .bitmapTransform(new BlurTransformation(HomeActivity.this, 23, 4)) // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
                 .into(bingPicHome);
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item){//滑动菜单的点击效果
-        switch (item.getItemId()){
+    public boolean onNavigationItemSelected(MenuItem item) {//滑动菜单的点击效果
+        switch (item.getItemId()) {
             case R.id.nav_home:
                 break;
-            case R.id.nav_call:
-                if(ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.CALL_PHONE)!= PackageManager.PERMISSION_GRANTED){
+            case R.id.nav_call://一键拨号
+                if (ContextCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(HomeActivity.this, new String[]{Manifest.permission.CALL_PHONE}, 1);
                 } else {
-                    navView.setCheckedItem(R.id.nav_home);
                     call();
                 }
                 break;
-            case R.id.nav_weather:
+            case R.id.nav_weather://获取天气信息
                 Intent intent = new Intent(HomeActivity.this, Main2Activity.class);
                 startActivity(intent);
                 break;
             default:
         }
+        navView.setCheckedItem(R.id.nav_home);
         mDrawerLayout.closeDrawers();
         return true;
     }
 
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){//定义菜栏上的点击事件
-        switch (item.getItemId()){
-            case android.R.id.home:
+    public boolean onOptionsItemSelected(MenuItem item) {//定义菜栏上的点击事件
+        switch (item.getItemId()) {
+            case android.R.id.home://打开侧拉栏
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 break;
-
             case R.id.update:
                 Toast.makeText(this, "正在上传数据...", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.settings:
-                Toast.makeText(this, "设置功能暂未开放", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, SettingActivity.class);
+                startActivity(intent);
                 break;
             case R.id.connect:
                 Toast.makeText(this, "正在连接设备...", Toast.LENGTH_SHORT).show();
@@ -157,24 +162,26 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void call(){
-        try{
+    private void call() {
+        try {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+            String callNumber = pref.getString("callNumber", "18856017129");
             Intent intentCall = new Intent(Intent.ACTION_CALL);
-            intentCall.setData(Uri.parse("tel:18856017129"));
+            intentCall.setData(Uri.parse("tel:" + callNumber));
             startActivity(intentCall);
-        } catch (SecurityException e){
+        } catch (SecurityException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
-        switch (requestCode){
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
             case 1:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     call();
                 } else {
-                    Toast.makeText(this, "你拒绝了拨号权限！", Toast.LENGTH_SHORT).show();
+                    Toaster.error(this, "你拒绝了拨号权限！", Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
