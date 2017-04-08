@@ -12,6 +12,18 @@ public class Zhihu {
     private String title;
     private String number;
 
+    public String getNumber() {
+        return number;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
     public Zhihu(String url, String title, String number) {
         Pattern pattern = Pattern.compile("question/(.*?)/");
         Matcher matcher = pattern.matcher(url);
@@ -20,7 +32,12 @@ public class Zhihu {
         } else {
             this.url = url;
         }
-        this.title = title;
-        this.number = number;
+        this.title = title + "  ";
+        this.number = "回答数: " + number;
+    }
+
+    @Override
+    public String toString() {
+        return "\n\ntitle: " + title + "number: " + number;
     }
 }

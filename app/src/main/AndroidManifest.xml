@@ -28,7 +28,8 @@
         <activity android:name=".Main2Activity" />
         <activity android:name=".WeatherActivity" />
         <activity android:name=".SettingActivity" />
-        <activity android:name=".ZhihuActivity"></activity>
+        <activity android:name=".ZhihuActivity" />
+        <activity android:name=".WebActvity"></activity>
     </application>
 
 </manifest>

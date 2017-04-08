@@ -5,10 +5,10 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.example.mylayout.util.HttpUtil;
 
@@ -24,17 +24,18 @@ import space.wangjiang.toaster.Toaster;
 
 public class ZhihuActivity extends AppCompatActivity {
 
-    TextView testText;
+    RecyclerView recyclerView;
+    LinearLayoutManager layoutManager;
 
-    ArrayList<Zhihu> ZhihuList = new ArrayList<>();
-    String responseString = "";
+    private ArrayList<Zhihu> ZhihuList = new ArrayList<>();
+    private String responseString = "";
+    private ZhihuAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_zhihu);
 
-        testText = (TextView) findViewById(R.id.test_text);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         setSupportActionBar(toolbar);
@@ -78,7 +79,11 @@ public class ZhihuActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        testText.setText(responseString);
+                        recyclerView = (RecyclerView) findViewById(R.id.recycler_view_zhihu);
+                        layoutManager = new LinearLayoutManager(ZhihuActivity.this);
+                        recyclerView.setLayoutManager(layoutManager);
+                        adapter = new ZhihuAdapter(ZhihuList);
+                        recyclerView.setAdapter(adapter);
                     }
                 });
             }
@@ -86,14 +91,11 @@ public class ZhihuActivity extends AppCompatActivity {
     }
 
     public static ArrayList<Zhihu> getNews(String responseString) {
-        ArrayList<Zhihu> ZhihuList = new ArrayList<Zhihu>();
+        ArrayList<Zhihu> ZhihuList = new ArrayList<>();
         Pattern pattern = Pattern.compile("<h2>.+?question_link.+?href=\"(.+?)\".+?>\\n(([^x00-xff]|.)+?)</a>(.|\\n)+?data-bind-votecount>(.+?)</a>");
         Matcher matcher = pattern.matcher(responseString);
         Boolean isFind = matcher.find();
         while (isFind) {
-            if (matcher.group(3) == null) {
-                System.out.println("group 3");
-            }
             //System.out.println("1 " + matcher.group(1) + "\n2  " + matcher.group(2) + "\n5  "+ matcher.group(5));
             //  定义一个知乎对象来存储抓取到的信息
             Zhihu zhihuTemp = new Zhihu(matcher.group(1), matcher.group(2), matcher.group(5));
