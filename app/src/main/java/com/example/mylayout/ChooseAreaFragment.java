@@ -125,7 +125,6 @@ public class ChooseAreaFragment extends Fragment {
 
     public void queryProvinces(){
         titleText.setText("中国");
-
         provinceList = DataSupport.findAll(Province.class);
         if(provinceList.size() > 0){
             dataList.clear();

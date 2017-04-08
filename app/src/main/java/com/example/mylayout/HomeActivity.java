@@ -129,6 +129,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 Intent intent = new Intent(HomeActivity.this, Main2Activity.class);
                 startActivity(intent);
                 break;
+            case R.id.nav_zhihu:
+                Toaster.success(this, "正在获取健康专栏", Toaster.LENGTH_SHORT).show();
+                Intent intent1 = new Intent(HomeActivity.this, ZhihuActivity.class);
+                startActivity(intent1);
+                break;
             default:
         }
         navView.setCheckedItem(R.id.nav_home);
