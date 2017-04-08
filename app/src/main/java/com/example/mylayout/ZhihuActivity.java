@@ -28,7 +28,6 @@ public class ZhihuActivity extends AppCompatActivity {
 
     ArrayList<Zhihu> ZhihuList = new ArrayList<>();
     String responseString = "";
-    String stringTemp = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +75,6 @@ public class ZhihuActivity extends AppCompatActivity {
                 responseString = response.body().string();
                 //爬虫处理
                 ZhihuList = getNews(responseString);//更新ZhihuList
-                Log.d("ZhihuActivity", ZhihuList.toString());
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -90,14 +87,16 @@ public class ZhihuActivity extends AppCompatActivity {
 
     public static ArrayList<Zhihu> getNews(String responseString) {
         ArrayList<Zhihu> ZhihuList = new ArrayList<Zhihu>();
-        Pattern pattern = Pattern.compile("<h2>.+?question_link.+?href=\"(.+?)\".+?>\\n([\\u4E00-\\u9FA5]*)");
+        Pattern pattern = Pattern.compile("<h2>.+?question_link.+?href=\"(.+?)\".+?>\\n(([^x00-xff]|.)+?)</a>(.|\\n)+?data-bind-votecount>(.+?)</a>");
         Matcher matcher = pattern.matcher(responseString);
         Boolean isFind = matcher.find();
         while (isFind) {
-            System.out.println(matcher.group(1));
-            System.out.println(matcher.group(2));
+            if (matcher.group(3) == null) {
+                System.out.println("group 3");
+            }
+            //System.out.println("1 " + matcher.group(1) + "\n2  " + matcher.group(2) + "\n5  "+ matcher.group(5));
             //  定义一个知乎对象来存储抓取到的信息
-            Zhihu zhihuTemp = new Zhihu(matcher.group(1), matcher.group(2));
+            Zhihu zhihuTemp = new Zhihu(matcher.group(1), matcher.group(2), matcher.group(5));
             // 添加成功匹配的结果
             ZhihuList.add(zhihuTemp);
             // 继续查找下一个匹配对象

@@ -10,8 +10,9 @@ import java.util.regex.Pattern;
 public class Zhihu {
     private String url;
     private String title;
+    private String number;
 
-    public Zhihu(String url, String title) {
+    public Zhihu(String url, String title, String number) {
         Pattern pattern = Pattern.compile("question/(.*?)/");
         Matcher matcher = pattern.matcher(url);
         if (matcher.find()) {
@@ -20,5 +21,6 @@ public class Zhihu {
             this.url = url;
         }
         this.title = title;
+        this.number = number;
     }
 }

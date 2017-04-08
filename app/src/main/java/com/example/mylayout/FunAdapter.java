@@ -23,12 +23,12 @@ public class FunAdapter extends RecyclerView.Adapter<FunAdapter.ViewHolder> {
     private Context mContext;
     private List<Fun> mFunList;
 
-    static class ViewHolder extends RecyclerView.ViewHolder{
+    static class ViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         ImageView funImage;
         TextView funName;
 
-        public ViewHolder(View view){
+        public ViewHolder(View view) {
             super(view);
             cardView = (CardView) view;
             funImage = (ImageView) view.findViewById(R.id.fun_image);
@@ -36,21 +36,21 @@ public class FunAdapter extends RecyclerView.Adapter<FunAdapter.ViewHolder> {
         }
     }
 
-    public FunAdapter(List<Fun> funList){
+    public FunAdapter(List<Fun> funList) {
         mFunList = funList;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        if(mContext == null){
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (mContext == null) {
             mContext = parent.getContext();
         }
         View view = LayoutInflater.from(mContext).inflate(R.layout.fun_item, parent, false);
 
         final ViewHolder holder = new ViewHolder(view);
-        holder.cardView.setOnClickListener(new View.OnClickListener(){
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 int position = holder.getAdapterPosition();
                 Fun fun = mFunList.get(position);
                 Intent intent = new Intent(mContext, FunActivity.class);
@@ -62,14 +62,14 @@ public class FunAdapter extends RecyclerView.Adapter<FunAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position){
+    public void onBindViewHolder(ViewHolder holder, int position) {
         Fun fun = mFunList.get(position);
         holder.funName.setText(fun.getName());
         Glide.with(mContext).load(fun.getImageId()).into(holder.funImage);
     }
 
     @Override
-    public int getItemCount(){
+    public int getItemCount() {
         return mFunList.size();
     }
 
