@@ -42,12 +42,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private String account;
 
     private Fun[] funs = {
-            new Fun("健身录", R.drawable.fun_run),
-            new Fun("测心率", R.drawable.fun_xinlv),
-            new Fun("测血糖", R.drawable.fun_xuetang),
-            new Fun("量血压", R.drawable.fun_xueya),
-            new Fun("消息站", R.drawable.fun_mail),
-            new Fun("轻松购", R.drawable.fun_buy)
+            new Fun("健身录", R.drawable.fun_run, "#5653ef"),
+            new Fun("测心率", R.drawable.fun_xinlv, "#7824cc"),
+            new Fun("测血糖", R.drawable.fun_xuetang, "#37353A"),
+            new Fun("量血压", R.drawable.fun_xueya, "#1E5798"),
+            new Fun("消息站", R.drawable.fun_mail, "#37a5e5"),
+            new Fun("轻松购", R.drawable.fun_buy, "#576866")
     };
     private List<Fun> funList = new ArrayList<>();
     private FunAdapter adapter;

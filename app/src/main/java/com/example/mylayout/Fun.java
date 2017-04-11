@@ -9,10 +9,16 @@ import java.io.Serializable;
 public class Fun implements Serializable {
     private String name;
     private int imageId;
+    private String colorString;
 
-    public Fun(String name, int imageId){
+    public Fun(String name, int imageId, String colorString) {
         this.name = name;
         this.imageId = imageId;
+        this.colorString = colorString;
+    }
+
+    public String getColorString() {
+        return colorString;
     }
 
     public int getImageId() {

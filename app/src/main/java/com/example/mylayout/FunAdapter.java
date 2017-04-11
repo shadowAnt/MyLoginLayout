@@ -2,6 +2,7 @@ package com.example.mylayout;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -65,6 +66,7 @@ public class FunAdapter extends RecyclerView.Adapter<FunAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         Fun fun = mFunList.get(position);
         holder.funName.setText(fun.getName());
+        holder.cardView.setCardBackgroundColor(Color.parseColor(fun.getColorString()));
         Glide.with(mContext).load(fun.getImageId()).into(holder.funImage);
     }
 
