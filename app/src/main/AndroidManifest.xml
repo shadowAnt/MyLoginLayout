@@ -10,7 +10,7 @@
     <application
         android:name="org.litepal.LitePalApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/lol"
+        android:icon="@mipmap/appicon"
         android:label="首页"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"

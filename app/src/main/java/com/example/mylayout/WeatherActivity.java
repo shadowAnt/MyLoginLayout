@@ -63,12 +63,12 @@ public class WeatherActivity extends AppCompatActivity {
 
     private ImageView bingPicImg;
 
-    private String mWeatherId;
+    private String weatherId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(Build.VERSION.SDK_INT >= 21){
+        if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
@@ -94,26 +94,32 @@ public class WeatherActivity extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather", null);
-        if(weatherString != null){
+        if (weatherString != null) {
             Weather weather = Utilty.handleWeatherResponse(weatherString);
-            mWeatherId = weather.basic.weatherId;
             showWeatherInfo(weather);
         } else {
-            mWeatherId = getIntent().getStringExtra("weather_id");
-            weatherLayout.setVisibility(View.INVISIBLE);
-            requestWeather(mWeatherId);
+            weatherId = prefs.getString("weatherId", null);
+            if (weatherId == null) {
+                Toaster.error(this, "无法获取weatherId", Toaster.LENGTH_SHORT).show();
+            } else {
+                requestWeather(weatherId);
+            }
+
         }
 
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
+        //下拉刷新
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onRefresh(){
-                requestWeather(mWeatherId);
+            public void onRefresh() {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this);
+                String weatherId = prefs.getString("weatherId", null);
+                requestWeather(weatherId);
             }
         });
 
         //加载每日一图
         String bingPic = prefs.getString("bing_pic", null);
-        if(bingPic != null){
+        if (bingPic != null) {
             Glide.with(WeatherActivity.this).load(bingPic).into(bingPicImg);
         } else {
             loadBingPic();
@@ -127,7 +133,7 @@ public class WeatherActivity extends AppCompatActivity {
         });
     }
 
-    private void loadBingPic(){
+    private void loadBingPic() {
         String url = "http://guolin.tech/api/bing_pic";
         HttpUtil.sendOKHttpResquest(url, new Callback() {
             @Override
@@ -151,7 +157,7 @@ public class WeatherActivity extends AppCompatActivity {
         });
     }
 
-    public void requestWeather(final String weatherId){
+    public void requestWeather(final String weatherId) {
         String weatherUrl = "https://free-api.heweather.com/v5/weather?city=" + weatherId + "&key=a048342e826d46e1a2b554a43f4ecab7";
         HttpUtil.sendOKHttpResquest(weatherUrl, new Callback() {
             @Override
@@ -173,7 +179,7 @@ public class WeatherActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(weather != null && weather.status.equals("ok")){
+                        if (weather != null && weather.status.equals("ok")) {
                             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                             editor.putString("weather", responseText);
                             editor.apply();
@@ -189,7 +195,7 @@ public class WeatherActivity extends AppCompatActivity {
         });
     }
 
-    private void showWeatherInfo(Weather weather){
+    private void showWeatherInfo(Weather weather) {
         String degree = weather.now.tmp + "℃";
         degreeText.setText(degree);
 
@@ -203,8 +209,8 @@ public class WeatherActivity extends AppCompatActivity {
         weatherInfoText.setText(weatherInfo);
 
         forecastLayout.removeAllViews();
-        for(DayForecast dayForecast : weather.dayForecastList){
-            View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout,false);
+        for (DayForecast dayForecast : weather.dayForecastList) {
+            View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);
             TextView dateText = (TextView) view.findViewById(R.id.date_text);
             TextView infoText = (TextView) view.findViewById(R.id.info_text);
             TextView maxText = (TextView) view.findViewById(R.id.max_text);
@@ -228,7 +234,7 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         Intent intent = new Intent(WeatherActivity.this, HomeActivity.class);
         startActivity(intent);
     }

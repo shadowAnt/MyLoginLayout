@@ -3,7 +3,9 @@ package com.example.mylayout;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -90,9 +92,15 @@ public class ChooseAreaFragment extends Fragment {
                     queryCounties();
                 } else if(currentLevel == LEVEL_COUNTY){
                     String weatherId = countyList.get(position).getWeatherId();
+
+                    //weatherId 写入
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("weatherId", weatherId);
+                    editor.apply();//保存
+
                     if(getActivity() instanceof Main2Activity){
                         Intent intent = new Intent(getActivity(), WeatherActivity.class);
-                        intent.putExtra("weather_id", weatherId);
                         startActivity(intent);
                         getActivity().finish();
                         //根据获取到的选中县级对象的weatherId组装成Url去获取天气信息
