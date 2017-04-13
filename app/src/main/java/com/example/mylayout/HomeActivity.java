@@ -4,11 +4,15 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -31,6 +35,8 @@ import com.example.mylayout.util.HttpUtil;
 import com.example.mylayout.util.UpdateDate;
 import com.example.mylayout.util.Utilty;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +52,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private NavigationView navView;
     private ImageView bingPicHome;
-    private String account;
+    private SharedPreferences pref;
 
     private Fun[] funs = {
             new Fun("健身录", R.drawable.fun_run, "#5653ef"),
@@ -58,19 +64,50 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     };
     private List<Fun> funList = new ArrayList<>();
     private FunAdapter adapter;
+    private Uri imageUri;
+    private String account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        Intent intent = getIntent();
-        account = intent.getStringExtra("account");//读取登陆活动传过来的用户名
+        //读取登陆活动传过来的用户名
+        pref = PreferenceManager.getDefaultSharedPreferences(HomeActivity.this);
+        account = pref.getString("account", "游客");
         navView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navView.getHeaderView(0);//setContentView把View设置为activity_home，但是滑动窗口在nav_view中
         TextView username = (TextView) headerView.findViewById(R.id.username);//重点
-        username.setText(account);
 
+        //设置用户头像
+        ImageView userIcon = (ImageView) headerView.findViewById(R.id.nav_icon_image);
+        File outputImage = new File(getExternalCacheDir(), "output_image.jpg");
+        if (outputImage.length() != 0) {
+            if (Build.VERSION.SDK_INT >= 24) {
+                imageUri = FileProvider.getUriForFile(HomeActivity.this, "com.example.mylayout.fileprovider", outputImage);
+            } else {
+                imageUri = Uri.fromFile(outputImage);
+            }
+            try {
+                Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                userIcon.setImageBitmap(bitmap);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            userIcon.setImageResource(R.drawable.icon_user);
+        }
+
+        username.setText(account);
+        userIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent1 = new Intent(HomeActivity.this, ChangeIconActivity.class);
+                startActivity(intent1);
+            }
+        });
+
+        //首页标题的一些设置
         TextView welcome = (TextView) findViewById(R.id.status);
         welcome.setText("欢迎 用户:" + account);
 
@@ -114,7 +151,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         bingPicHome = (ImageView) findViewById(R.id.bing_pic_home);
         String bingPic = prefs.getString("bing_pic", null);
-        if(bingPic != null){
+        if (bingPic != null) {
             Glide.with(HomeActivity.this)
                     .load(bingPic)
                     .crossFade(1000)
@@ -126,7 +163,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void loadBingPic(){
+    private void loadBingPic() {
         String url = "http://guolin.tech/api/bing_pic";
         HttpUtil.sendOKHttpResquest(url, new Callback() {
             @Override

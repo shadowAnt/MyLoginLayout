@@ -1,5 +1,6 @@
 package com.example.mylayout;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -226,4 +227,9 @@ public class WeatherActivity extends AppCompatActivity {
         weatherLayout.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent(WeatherActivity.this, HomeActivity.class);
+        startActivity(intent);
+    }
 }
