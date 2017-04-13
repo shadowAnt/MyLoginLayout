@@ -27,19 +27,25 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.mylayout.gson.Weather;
+import com.example.mylayout.util.HttpUtil;
 import com.example.mylayout.util.UpdateDate;
 import com.example.mylayout.util.Utilty;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 import space.wangjiang.toaster.Toaster;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout mDrawerLayout;
     private NavigationView navView;
+    private ImageView bingPicHome;
     private String account;
 
     private Fun[] funs = {
@@ -105,13 +111,44 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
 
         //高斯模糊
-        ImageView bingPicHome = (ImageView) findViewById(R.id.bing_pic_home);
-        Glide.with(HomeActivity.this)
-                .load("https://www.dujin.org/sys/bing/1920.php")
-                .crossFade(1000)
-                .placeholder(R.drawable.bing_cache)
-                .bitmapTransform(new BlurTransformation(HomeActivity.this, 23, 4)) // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
-                .into(bingPicHome);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        bingPicHome = (ImageView) findViewById(R.id.bing_pic_home);
+        String bingPic = prefs.getString("bing_pic", null);
+        if(bingPic != null){
+            Glide.with(HomeActivity.this)
+                    .load(bingPic)
+                    .crossFade(1000)
+                    .placeholder(R.drawable.bing_cache)
+                    .bitmapTransform(new BlurTransformation(HomeActivity.this, 23, 4)) // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
+                    .into(bingPicHome);
+        } else {
+            loadBingPic();
+        }
+
+    }
+
+    private void loadBingPic(){
+        String url = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOKHttpResquest(url, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String bingPic = response.body().string();
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(HomeActivity.this).edit();
+                editor.putString("bing_pic", bingPic);
+                editor.apply();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(HomeActivity.this).load(bingPic).into(bingPicHome);
+                    }
+                });
+            }
+        });
     }
 
     @Override
