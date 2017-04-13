@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.mylayout.gson.Weather;
+import com.example.mylayout.util.UpdateDate;
 import com.example.mylayout.util.Utilty;
 
 import java.util.ArrayList;
@@ -160,7 +161,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intent);
                 break;
             case R.id.connect:
-                Toast.makeText(this, "正在连接设备...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "正在更新数据...", Toast.LENGTH_SHORT).show();
+                UpdateDate updateDate = new UpdateDate(HomeActivity.this);
+                updateDate.update_date();
                 break;
             default:
         }

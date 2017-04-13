@@ -1,5 +1,7 @@
 package com.example.mylayout;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,17 +13,16 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.text.DecimalFormat;
-import java.util.Random;
-
 public class FunActivity extends AppCompatActivity {
 
-    DecimalFormat df = new DecimalFormat( "0.00");
+    SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fun);
+
+        pref = PreferenceManager.getDefaultSharedPreferences(this);
 
         Fun fun = (Fun) getIntent().getSerializableExtra("fun_data");
         String funName = fun.getName();
@@ -34,7 +35,7 @@ public class FunActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         collapsingToolbarLayout.setTitle(funName);
@@ -47,9 +48,9 @@ public class FunActivity extends AppCompatActivity {
         funSuggestionText.setText(funSuggestion);
     }
 
-    private String initFunContent(String funName){
+    private String initFunContent(String funName) {
         String content = "";
-        switch (funName){
+        switch (funName) {
             case "健身录":
                 content = initJianShen();
                 break;
@@ -74,9 +75,9 @@ public class FunActivity extends AppCompatActivity {
         return funContent.toString();
     }
 
-    private String initFunSuggestion(String funName){
+    private String initFunSuggestion(String funName) {
         String suggestion = "";
-        switch (funName){
+        switch (funName) {
             case "健身录":
                 suggestion = sugJianShen();
                 break;
@@ -102,8 +103,8 @@ public class FunActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 return true;
@@ -111,41 +112,31 @@ public class FunActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public String initJianShen(){
-        double length;
-        Random random = new Random();
-        length = random.nextDouble() * 10;
-        return "  您今天大约走了" + df.format(length) + "km";
+    public String initJianShen() {
+        return pref.getString("jianshen", "未连接设备，暂无数据!");
     }
-    public String initXinLv(){
-        int xinlv;
-        Random random = new Random();
-        xinlv = random.nextInt(70) + 50;
-        return "  您的平均心率大约为：" + xinlv + "次/分";
+
+    public String initXinLv() {
+        return pref.getString("xinlv", "未连接设备，暂无数据!");
     }
-    public String initXueTang(){
-        double xuetang;
-        Random random = new Random();
-        xuetang = random.nextDouble() * 10;
-        return "  您的平均血糖值大约为： " + df.format(xuetang) + "mmol/L";
+
+    public String initXueTang() {
+        return pref.getString("xuetang", "未连接设备，暂无数据!");
     }
-    public String initXueYa(){
-        int shou;
-        int shu;
-        Random shouR = new Random();
-        Random shuR = new Random();
-        shou = shouR.nextInt(30) + 100;
-        shu = shuR.nextInt(20) + 70;
-        return "  您的收缩压/舒张压大约为： " + shou + "/" + shu + "mmHg";
+
+    public String initXueYa() {
+        return pref.getString("xueya", "未连接设备，暂无数据!");
     }
-    public String initMsg(){
+
+    public String initMsg() {
         return "收到服务器的返回";
     }
-    public String initBuy(){
+
+    public String initBuy() {
         return "联系电话 ： 18856017129";
     }
 
-    public String sugJianShen(){
+    public String sugJianShen() {
         return "长期坚持跑步 对身体有6个益处\n" +
                 "\n" +
                 "1、眼睛：坚持长跑的人每天都有1小时候左右的时间眼睛直视远方，这对眼睛是很好的放松休息，如果你家里有学龄的孩子，能让他每天坚持跑步，眼睛近视的几率肯定会降低。\n" +
@@ -161,7 +152,8 @@ public class FunActivity extends AppCompatActivity {
                 "\n" +
                 "6、肝脏：我在一次体检的时候，体检医生把实习生叫到跟前说：你们来看看，这才是健康的肝脏，表面血管脉络纹理清晰，现在这样的很少见了。跑步消除脂肪肝，这在很多跑友身上都有了验证，非常有效";
     }
-    public String sugXinLv(){
+
+    public String sugXinLv() {
         return "人的心跳次数最好在60-90/分之间。人在大量饮酒、激动、生气、情绪不稳，运动以及感染、高热时都会造成心跳加快。长期坚持适度运动可以使心跳变慢。\n" +
                 "　　剧烈运动，大量饮酒，常生气、发怒等都对人体有害，所以要保持一颗平静的心很重要。坚持适度运动，可以使心脏得到锻炼又不至于心跳过快，决定寿命的长短主要还靠遗传基因。\n" +
                 "　　心率越慢寿命越长\n" +
@@ -171,7 +163,8 @@ public class FunActivity extends AppCompatActivity {
                 "　　目前，这些现象的确切原因尚未完全阐明，但人们提出了一种解释：心率由机体能量代谢需求决定，遵守生物物理学规律，机体能量耗尽，生命也就终结，而心率正是反映机体能量代谢的有效指标。\n" +
                 "　　心脏是人体非常重要的器官之一，心脏的使用寿命决定了人体的寿命，因此，在生活中，我们要好好的保护我们的心脏，希望能够帮助大家哦！";
     }
-    public String sugXueTang(){
+
+    public String sugXueTang() {
         return "高血糖是人们在日常的生活中非常常见哦，特别是一些中老年人大部分都是高血糖患者，而高血糖的危害是非常的大的，有时甚至会危及生命，而降血糖的方法也是非常的多的，有饮食、运动等待，今天小编要为大家介绍的则是一些可以降血糖的蔬菜。\n" +
                 "\n" +
                 "　　降血糖的蔬菜\n" +
@@ -201,7 +194,8 @@ public class FunActivity extends AppCompatActivity {
                 "\n" +
                 "　　健脾化滞、养肾壮阳，含胡萝卜素、维生素等多种成分，以及一种无定形黄色成分，有明显的降血糖作用。";
     }
-    public String sugXueYa(){
+
+    public String sugXueYa() {
         return "养生要点：心态平和，避免激动。\n" +
                 "\n" +
                 "　　清晨6～9时\n" +
@@ -228,10 +222,12 @@ public class FunActivity extends AppCompatActivity {
                 "\n" +
                 "　　养生要点：洗浴时水温不能过高，时间不宜过长。";
     }
-    public String sugMsg(){
+
+    public String sugMsg() {
         return "接受服务器反馈信息";
     }
-    public String sugBuy(){
+
+    public String sugBuy() {
         return "联系医生，预购药";
     }
 }
