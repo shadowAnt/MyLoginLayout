@@ -124,7 +124,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         } else {
             loadBingPic();
         }
-
     }
 
     private void loadBingPic(){
@@ -162,13 +161,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 } else {
                     call();
                 }
+                item.setCheckable(false);
                 break;
             case R.id.nav_weather://获取天气信息
                 Intent intent = new Intent(HomeActivity.this, Main2Activity.class);
                 startActivity(intent);
+                item.setCheckable(false);
                 break;
             case R.id.nav_zhihu:
                 Toaster.success(this, "正在获取健康专栏", Toaster.LENGTH_SHORT).show();
+                item.setCheckable(false);
                 Intent intent1 = new Intent(HomeActivity.this, ZhihuActivity.class);
                 startActivity(intent1);
                 break;
