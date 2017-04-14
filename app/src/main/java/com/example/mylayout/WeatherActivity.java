@@ -96,6 +96,9 @@ public class WeatherActivity extends AppCompatActivity {
         String weatherString = prefs.getString("weather", null);
         if (weatherString != null) {
             Weather weather = Utilty.handleWeatherResponse(weatherString);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("weatherId",weather.basic.weatherId);
+            editor.apply();
             showWeatherInfo(weather);
         } else {
             weatherId = prefs.getString("weatherId", null);
@@ -114,6 +117,7 @@ public class WeatherActivity extends AppCompatActivity {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this);
                 String weatherId = prefs.getString("weatherId", null);
                 requestWeather(weatherId);
+                loadBingPic();
             }
         });
 

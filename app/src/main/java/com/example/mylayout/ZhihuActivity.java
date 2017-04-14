@@ -9,7 +9,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.example.mylayout.util.HttpUtil;
 
 import java.io.IOException;
@@ -26,6 +28,7 @@ public class ZhihuActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
+    ImageView bingImage;
 
     private ArrayList<Zhihu> ZhihuList = new ArrayList<>();
     private String responseString = "";
@@ -36,6 +39,8 @@ public class ZhihuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_zhihu);
 
+        bingImage = (ImageView) findViewById(R.id.bing_image);
+        Glide.with(this).load(R.drawable.bing_cache).into(bingImage);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         setSupportActionBar(toolbar);
