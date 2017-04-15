@@ -21,6 +21,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.example.mylayout.util.ImageFactory;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -57,6 +59,8 @@ public class ChangeIconActivity extends AppCompatActivity {
             }
             try {
                 Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                ImageFactory imageFactory = new ImageFactory();
+                bitmap = imageFactory.ratio(bitmap, 200, 200);
                 picture.setImageBitmap(bitmap);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -70,6 +74,7 @@ public class ChangeIconActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(ChangeIconActivity.this, HomeActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -155,7 +160,6 @@ public class ChangeIconActivity extends AppCompatActivity {
             default:
                 break;
         }
-        Toaster.success(this, "设置成功！", Toaster.LENGTH_SHORT).show();
     }
 
     @TargetApi(19)
@@ -229,5 +233,6 @@ public class ChangeIconActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent intent = new Intent(ChangeIconActivity.this, HomeActivity.class);
         startActivity(intent);
+        finish();
     }
 }

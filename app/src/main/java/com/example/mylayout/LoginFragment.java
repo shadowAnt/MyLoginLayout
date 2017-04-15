@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.mylayout.util.ImageFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -77,6 +78,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
             }
             try {
                 Bitmap bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(imageUri));
+                ImageFactory imageFactory = new ImageFactory();
+                bitmap = imageFactory.ratio(bitmap, 200, 200);
                 iconImage.setImageBitmap(bitmap);
                 Drawable drawable = new BitmapDrawable(bitmap);
                 //高斯模糊

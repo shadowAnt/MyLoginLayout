@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.mylayout.gson.Weather;
 import com.example.mylayout.util.HttpUtil;
+import com.example.mylayout.util.ImageFactory;
 import com.example.mylayout.util.UpdateDate;
 import com.example.mylayout.util.Utilty;
 
@@ -90,6 +91,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
             try {
                 Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                ImageFactory imageFactory = new ImageFactory();
+                bitmap = imageFactory.ratio(bitmap, 200, 200);
                 userIcon.setImageBitmap(bitmap);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -104,6 +107,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 Intent intent1 = new Intent(HomeActivity.this, ChangeIconActivity.class);
                 startActivity(intent1);
+                finish();
             }
         });
 
