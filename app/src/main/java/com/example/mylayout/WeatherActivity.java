@@ -241,5 +241,6 @@ public class WeatherActivity extends AppCompatActivity {
     public void onBackPressed() {
         Intent intent = new Intent(WeatherActivity.this, HomeActivity.class);
         startActivity(intent);
+        finish();
     }
 }

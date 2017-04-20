@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,7 +144,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         if (isRemember) {
             password = pref.getString("password", "");
             try{
-                password = AESEncryptor.decrypt("41227677",password);
+                password = AESEncryptor.decrypt("41227677", password);
+                Log.d("loginFagment", password);
             } catch (Exception e){
                 e.printStackTrace();
             }

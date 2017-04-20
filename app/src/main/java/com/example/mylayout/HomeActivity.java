@@ -250,17 +250,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void call() {
-        try {
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-            String callNumber = pref.getString("callNumber", "18856017129");
-            Intent intentCall = new Intent(Intent.ACTION_CALL);
-            intentCall.setData(Uri.parse("tel:" + callNumber));
-            startActivity(intentCall);
-        } catch (SecurityException e) {
-            e.printStackTrace();
+        private void call() {
+            try {
+                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+                String callNumber = pref.getString("callNumber", "18856017129");
+                Intent intentCall = new Intent(Intent.ACTION_CALL);
+                intentCall.setData(Uri.parse("tel:" + callNumber));
+                startActivity(intentCall);
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            }
         }
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
