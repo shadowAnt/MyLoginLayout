@@ -25,11 +25,12 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.example.mylayout.util.AESEncryptor;
 import com.example.mylayout.util.ImageFactory;
+import com.scottyab.aescrypt.AESCrypt;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.security.GeneralSecurityException;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import space.wangjiang.toaster.Toaster;
@@ -48,11 +49,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     private AutoCompleteTextView passwordEdit;
     private ImageView gaosiLogin;
     private ImageView iconImage;
-
     private Uri imageUri;
-
     private String account;
-    private String password;
+    private static String password;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -117,11 +116,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 progressBar.setVisibility(View.VISIBLE);//让进度条显示
                 account = accountEdit.getText().toString();
                 password = passwordEdit.getText().toString();//得到输入的用户名和密码
-                try{
-                    password = AESEncryptor.encrypt("41227677",password);
-                } catch (Exception e){
+                try {
+                    password = AESCrypt.encrypt("password", password);
+                } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 }
+                Log.d("加密", password);
                 save_account_password();//保存
                 Toaster.success(getActivity(), "登录成功 !", Toast.LENGTH_SHORT).show();
 
@@ -143,12 +143,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         accountEdit.setText(account);
         if (isRemember) {
             password = pref.getString("password", "");
-            try{
-                password = AESEncryptor.decrypt("41227677", password);
-                Log.d("loginFagment", password);
-            } catch (Exception e){
+            try {
+                password = AESCrypt.decrypt("password", password);
+            } catch (GeneralSecurityException e) {
                 e.printStackTrace();
             }
+            Log.d("解密", password);
             passwordEdit.setText(password);
             rememberPass.setChecked(true);//启动的时候把对钩打上
         }

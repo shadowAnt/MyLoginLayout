@@ -45,6 +45,10 @@ import java.util.List;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import space.wangjiang.toaster.Toaster;
 
@@ -235,6 +239,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.update:
                 Toast.makeText(this, "正在上传数据...", Toast.LENGTH_SHORT).show();
+                sendRequestWithOkHttp();
                 break;
             case R.id.settings:
                 Intent intent = new Intent(this, SettingActivity.class);
@@ -250,17 +255,57 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-        private void call() {
-            try {
-                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-                String callNumber = pref.getString("callNumber", "18856017129");
-                Intent intentCall = new Intent(Intent.ACTION_CALL);
-                intentCall.setData(Uri.parse("tel:" + callNumber));
-                startActivity(intentCall);
-            } catch (SecurityException e) {
-                e.printStackTrace();
+    private void sendRequestWithOkHttp(){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        final String xuetang = pref.getString("xuetang", "");
+        final String jianshen = pref.getString("jianshen", "");
+        final String xueya = pref.getString("xueya", "");
+        final String xinlv = pref.getString("xinlv", "");
+        final RequestBody requestBody = new FormBody.Builder()
+                .add("xuetang", xuetang)
+                .add("jianshen", jianshen)
+                .add("xueya", xueya)
+                .add("xinlv", xinlv)
+                .build();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    OkHttpClient client = new OkHttpClient();
+                    //url("http://localhost/index.php/?username=username&password=password&xuetang="+xuetang)
+                    Request request = new Request.Builder()
+                            .url("http://192.168.10.10/index.php/?username=username&password=password&xuetang="+xuetang+"&jianshen="+jianshen+"&xueya="+xueya+"&xinlv="+xinlv)
+                            .post(requestBody)
+                            .build();
+                    Response response = client.newCall(request).execute();
+                    final String responseData = response.body().string();
+                    System.out.println(responseData);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(HomeActivity.this).edit();
+                            editor.putString("updateResult", responseData);
+                            editor.apply();
+                        }
+                    });
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
             }
+        }).start();
+    }
+
+    private void call() {
+        try {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+            String callNumber = pref.getString("callNumber", "18856017129");
+            Intent intentCall = new Intent(Intent.ACTION_CALL);
+            intentCall.setData(Uri.parse("tel:" + callNumber));
+            startActivity(intentCall);
+        } catch (SecurityException e) {
+            e.printStackTrace();
         }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
