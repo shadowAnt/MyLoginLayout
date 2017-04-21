@@ -138,6 +138,14 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             e.printStackTrace();
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toaster.error(getActivity(), "登录失败，网络问题或服务器异常", Toaster.LENGTH_SHORT).show();
+                                    progressBar.setVisibility(View.INVISIBLE);//让进度条显示
+                                }
+                            });
+
                         }
 
                         @Override
@@ -167,6 +175,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                             }
                         }
                     });
+                } else {
+                    Intent intent = new Intent(getActivity(), HomeActivity.class);
+                    startActivity(intent);
+                    //结束掉登录界面活动
+                    getActivity().finish();
                 }
                 break;
             default:
