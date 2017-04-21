@@ -83,8 +83,6 @@ public class ImageFactory {
         newOpts.inSampleSize = be;//设置缩放比例
         // 开始压缩图片，注意此时已经把options.inJustDecodeBounds 设回false了
         bitmap = BitmapFactory.decodeFile(imgPath, newOpts);
-        // 压缩好比例大小后再进行质量压缩
-//        return compress(bitmap, maxSize); // 这里再进行质量压缩的意义不大，反而耗资源，删除
         return bitmap;
     }
 
@@ -98,6 +96,8 @@ public class ImageFactory {
      * @return
      */
     public Bitmap ratio(Bitmap image, float pixelW, float pixelH) {
+        double a = image.getRowBytes() * image.getHeight();
+        System.out.println("原图像大小："+ a);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, os);
         if( os.toByteArray().length / 1024>1024) {//判断如果图片大于1M,进行压缩避免在生成图片（BitmapFactory.decodeStream）时溢出
@@ -127,8 +127,9 @@ public class ImageFactory {
         //重新读入图片，注意此时已经把options.inJustDecodeBounds 设回false了
         is = new ByteArrayInputStream(os.toByteArray());
         bitmap = BitmapFactory.decodeStream(is, null, newOpts);
-        //压缩好比例大小后再进行质量压缩
-//      return compress(bitmap, maxSize); // 这里再进行质量压缩的意义不大，反而耗资源，删除
+        double b = bitmap.getRowBytes() * bitmap.getHeight();
+        System.out.println("压缩后的图像大小："+ b);
+        System.out.println(b / a * 100.0 +"%");
         return bitmap;
     }
 
