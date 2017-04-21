@@ -255,7 +255,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void sendRequestWithOkHttp(){
+    private void sendRequestWithOkHttp() {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         final String xuetang = pref.getString("xuetang", "");
         final String jianshen = pref.getString("jianshen", "");
@@ -267,32 +267,34 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 .add("xueya", xueya)
                 .add("xinlv", xinlv)
                 .build();
-        new Thread(new Runnable() {
+        String url = "http://192.168.191.1/index.php/?username=username&password=password&xuetang=" + xuetang + "&jianshen=" + jianshen + "&xueya=" + xueya + "&xinlv=" + xinlv;
+        HttpUtil.sendOKHttpResquest(url, new Callback() {
             @Override
-            public void run() {
-                try{
-                    OkHttpClient client = new OkHttpClient();
-                    //url("http://localhost/index.php/?username=username&password=password&xuetang="+xuetang)
-                    Request request = new Request.Builder()
-                            .url("http://192.168.10.10/index.php/?username=username&password=password&xuetang="+xuetang+"&jianshen="+jianshen+"&xueya="+xueya+"&xinlv="+xinlv)
-                            .post(requestBody)
-                            .build();
-                    Response response = client.newCall(request).execute();
-                    final String responseData = response.body().string();
-                    System.out.println(responseData);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(HomeActivity.this).edit();
-                            editor.putString("updateResult", responseData);
-                            editor.apply();
-                        }
-                    });
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toaster.error(HomeActivity.this, "发送失败!", Toaster.LENGTH_SHORT).show();
+                    }
+                });
             }
-        }).start();
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String responseData = response.body().string();
+                System.out.println(responseData);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toaster.success(HomeActivity.this, "发送成功!", Toaster.LENGTH_SHORT).show();
+                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(HomeActivity.this).edit();
+                        editor.putString("updateResult", responseData);
+                        editor.apply();
+                    }
+                });
+            }
+        });
     }
 
     private void call() {

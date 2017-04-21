@@ -25,14 +25,21 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.mylayout.util.HttpUtil;
 import com.example.mylayout.util.ImageFactory;
 import com.scottyab.aescrypt.AESCrypt;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import space.wangjiang.toaster.Toaster;
 
 /**
@@ -116,6 +123,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 progressBar.setVisibility(View.VISIBLE);//让进度条显示
                 account = accountEdit.getText().toString();
                 password = passwordEdit.getText().toString();//得到输入的用户名和密码
+                String tmp = password;
+                String url = "http://192.168.191.1/index.php/?username=" + account + "&password=" + tmp;
                 try {
                     password = AESCrypt.encrypt("password", password);
                 } catch (GeneralSecurityException e) {
@@ -123,14 +132,42 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 }
                 Log.d("加密", password);
                 save_account_password();//保存
-                Toaster.success(getActivity(), "登录成功 !", Toast.LENGTH_SHORT).show();
+                //通过服务器上网
+                if (!(account.equals("123") && tmp.equals("123456"))) {
+                    HttpUtil.sendOKHttpResquest(url, new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            e.printStackTrace();
+                        }
 
-                //点击按钮生成一个Intent，传递信息给HomeActivity
-                Intent intent = new Intent(getActivity(), HomeActivity.class);
-                startActivity(intent);
-
-                //结束掉登录界面活动
-                getActivity().finish();
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            final String responseText = response.body().string();
+                            if (!responseText.equals("success")) {
+                                //登录失败的处理
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toaster.error(getActivity(), "登录失败，请核对用户名或密码", Toaster.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } else {
+                                System.out.println(responseText);//登录成功的处理
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toaster.success(getActivity(), "登录成功!", Toaster.LENGTH_LONG).show();
+                                    }
+                                });
+                                //点击按钮生成一个Intent，传递信息给HomeActivity
+                                Intent intent = new Intent(getActivity(), HomeActivity.class);
+                                startActivity(intent);
+                                //结束掉登录界面活动
+                                getActivity().finish();
+                            }
+                        }
+                    });
+                }
                 break;
             default:
         }
@@ -157,7 +194,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     public void save_account_password() {
         editor = pref.edit();
         editor.putString("account", account);//无脑存储用户名
-        if (rememberPass.isChecked()) {//根据记住密码与否存储密码
+        if (rememberPass.isChecked()) {
+            //根据记住密码与否存储密码
             editor.putBoolean("remember_password", true);
             editor.putString("password", password);
         }

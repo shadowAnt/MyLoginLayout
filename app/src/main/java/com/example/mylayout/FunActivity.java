@@ -13,6 +13,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class FunActivity extends AppCompatActivity {
 
     SharedPreferences pref;
@@ -129,7 +132,12 @@ public class FunActivity extends AppCompatActivity {
     }
 
     public String initMsg() {
-        return "收到服务器的返回";
+        String tmp = pref.getString("updateResult", "还未发送任何信息");
+        if(!tmp.equals("还未发送任何信息")){
+            String[] sourceStrArray = tmp.split("success");
+            return sourceStrArray[1];
+        }
+        return tmp;
     }
 
     public String initBuy() {
