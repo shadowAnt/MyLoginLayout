@@ -1,6 +1,7 @@
 package com.example.mylayout;
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -20,9 +21,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.mylayout.util.HttpUtil;
@@ -37,8 +35,6 @@ import java.security.GeneralSecurityException;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
 import space.wangjiang.toaster.Toaster;
 
@@ -48,7 +44,6 @@ import space.wangjiang.toaster.Toaster;
 
 public class LoginFragment extends Fragment implements View.OnClickListener {
 
-    private ProgressBar progressBar;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private CheckBox rememberPass;
@@ -59,6 +54,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     private Uri imageUri;
     private String account;
     private static String password;
+    private ProgressDialog progressDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,7 +62,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
         Button login = (Button) view.findViewById(R.id.login);
         login.setOnClickListener(this);
-        progressBar = (ProgressBar) view.findViewById(R.id.login_progress);
         rememberPass = (CheckBox) view.findViewById(R.id.remember_pass);
         accountEdit = (AutoCompleteTextView) view.findViewById(R.id.name);
         passwordEdit = (AutoCompleteTextView) view.findViewById(R.id.password);
@@ -120,18 +115,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.login:
-                progressBar.setVisibility(View.VISIBLE);//让进度条显示
+                showProgressDialog();
                 account = accountEdit.getText().toString();
                 password = passwordEdit.getText().toString();//得到输入的用户名和密码
                 String tmp = password;
                 String url = "http://192.168.191.1/index.php/?username=" + account + "&password=" + tmp;
-                try {
-                    password = AESCrypt.encrypt("password", password);
-                } catch (GeneralSecurityException e) {
-                    e.printStackTrace();
-                }
-                Log.d("加密", password);
-                save_account_password();//保存
                 //通过服务器上网
                 if (!(account.equals("123") && tmp.equals("123456"))) {
                     HttpUtil.sendOKHttpResquest(url, new Callback() {
@@ -142,10 +130,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                                 @Override
                                 public void run() {
                                     Toaster.error(getActivity(), "登录失败，网络问题或服务器异常", Toaster.LENGTH_SHORT).show();
-                                    progressBar.setVisibility(View.INVISIBLE);//让进度条显示
                                 }
                             });
-
                         }
 
                         @Override
@@ -167,6 +153,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                                         Toaster.success(getActivity(), "登录成功!", Toaster.LENGTH_LONG).show();
                                     }
                                 });
+                                save_account_password();//保存
                                 //点击按钮生成一个Intent，传递信息给HomeActivity
                                 Intent intent = new Intent(getActivity(), HomeActivity.class);
                                 startActivity(intent);
@@ -176,11 +163,13 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                         }
                     });
                 } else {
+                    save_account_password();//保存
                     Intent intent = new Intent(getActivity(), HomeActivity.class);
                     startActivity(intent);
                     //结束掉登录界面活动
                     getActivity().finish();
                 }
+                closeProgressDialog();
                 break;
             default:
         }
@@ -205,6 +194,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     }
 
     public void save_account_password() {
+        try {
+            password = AESCrypt.encrypt("password", password);
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+        Log.d("加密", password);
         editor = pref.edit();
         editor.putString("account", account);//无脑存储用户名
         if (rememberPass.isChecked()) {
@@ -213,5 +208,20 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
             editor.putString("password", password);
         }
         editor.apply();//将数据保存，异步，比commit快
+    }
+
+    private void showProgressDialog() {
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage("正在登录...");
+            progressDialog.setCanceledOnTouchOutside(false);
+        }
+        progressDialog.show();
+    }
+
+    private void closeProgressDialog() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
     }
 }
