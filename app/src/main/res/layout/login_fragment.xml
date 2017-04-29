@@ -90,7 +90,7 @@
                     android:text="登录"
                     android:textColor="#fff"
                     android:id="@+id/login"
-                    android:background="#359df2"/>
+                    android:background="@drawable/btn_selector"/>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

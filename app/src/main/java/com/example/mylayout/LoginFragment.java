@@ -55,12 +55,14 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     private String account;
     private static String password;
     private ProgressDialog progressDialog;
+    private Button login;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.login_fragment, container, false);
 
-        Button login = (Button) view.findViewById(R.id.login);
+        //登录按钮
+        login = (Button) view.findViewById(R.id.login);
         login.setOnClickListener(this);
         rememberPass = (CheckBox) view.findViewById(R.id.remember_pass);
         accountEdit = (AutoCompleteTextView) view.findViewById(R.id.name);
