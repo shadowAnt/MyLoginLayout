@@ -1,6 +1,8 @@
 package com.example.mylayout;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
@@ -8,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,10 +26,14 @@ public class FunActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //融为一体
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.activity_fun);
-
         pref = PreferenceManager.getDefaultSharedPreferences(this);
-
         Fun fun = (Fun) getIntent().getSerializableExtra("fun_data");
         String funName = fun.getName();
         int funImageId = fun.getImageId();
@@ -133,7 +140,7 @@ public class FunActivity extends AppCompatActivity {
 
     public String initMsg() {
         String tmp = pref.getString("updateResult", "还未发送任何信息");
-        if(!tmp.equals("还未发送任何信息")){
+        if(!tmp.equals("还未发送任何信息")&&tmp!=""){
             String[] sourceStrArray = tmp.split("success");
             return sourceStrArray[1];
         }

@@ -97,7 +97,7 @@ public class WeatherActivity extends AppCompatActivity {
         if (weatherString != null) {
             Weather weather = Utilty.handleWeatherResponse(weatherString);
             SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("weatherId",weather.basic.weatherId);
+            editor.putString("weatherId", weather.basic.weatherId);
             editor.apply();
             showWeatherInfo(weather);
         } else {

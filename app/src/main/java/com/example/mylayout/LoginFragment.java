@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -25,6 +26,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.mylayout.util.HttpUtil;
 import com.example.mylayout.util.ImageFactory;
+import com.example.mylayout.util.Post;
 import com.scottyab.aescrypt.AESCrypt;
 
 import java.io.File;
@@ -35,6 +37,8 @@ import java.security.GeneralSecurityException;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import space.wangjiang.toaster.Toaster;
 
@@ -59,6 +63,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //融为一体
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getActivity().getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getActivity().getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         View view = inflater.inflate(R.layout.login_fragment, container, false);
 
         //登录按钮
@@ -121,10 +131,14 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 account = accountEdit.getText().toString();
                 password = passwordEdit.getText().toString();//得到输入的用户名和密码
                 String tmp = password;
-                String url = "http://192.168.191.1/index.php/?username=" + account + "&password=" + tmp;
+                RequestBody requestBody = new FormBody.Builder()
+                        .add("username", account)
+                        .add("password", tmp)
+                        .build();
+                String url = "http://192.168.191.1/index.php";
                 //通过服务器上网
                 if (!(account.equals("123") && tmp.equals("123456"))) {
-                    HttpUtil.sendOKHttpResquest(url, new Callback() {
+                    Post.sendOKHttpResquest(requestBody, url, new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             e.printStackTrace();
@@ -155,21 +169,13 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                                         Toaster.success(getActivity(), "登录成功!", Toaster.LENGTH_LONG).show();
                                     }
                                 });
-                                save_account_password();//保存
-                                //点击按钮生成一个Intent，传递信息给HomeActivity
-                                Intent intent = new Intent(getActivity(), HomeActivity.class);
-                                startActivity(intent);
-                                //结束掉登录界面活动
-                                getActivity().finish();
+                                next();
                             }
                         }
                     });
                 } else {
-                    save_account_password();//保存
-                    Intent intent = new Intent(getActivity(), HomeActivity.class);
-                    startActivity(intent);
-                    //结束掉登录界面活动
-                    getActivity().finish();
+                    //使用123 123456登录
+                    next();
                 }
                 closeProgressDialog();
                 break;
@@ -225,5 +231,14 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
+    }
+
+    private void next(){
+        save_account_password();//保存
+        //点击按钮生成一个Intent，传递信息给HomeActivity
+        Intent intent = new Intent(getActivity(), HomeActivity.class);
+        startActivity(intent);
+        //结束掉登录界面活动
+        getActivity().finish();
     }
 }

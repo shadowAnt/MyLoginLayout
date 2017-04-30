@@ -1,6 +1,7 @@
 package com.example.mylayout;
 
-
+import android.graphics.Color;
+import android.os.Build;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,9 +10,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.mylayout.util.HttpUtil;
 
 import java.io.IOException;
@@ -29,7 +32,6 @@ public class ZhihuActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
     ImageView bingImage;
-
     private ArrayList<Zhihu> ZhihuList = new ArrayList<>();
     private String responseString = "";
     private ZhihuAdapter adapter;
@@ -37,10 +39,20 @@ public class ZhihuActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //融为一体
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.activity_zhihu);
-
+        //加载每日一图
         bingImage = (ImageView) findViewById(R.id.bing_image);
-        Glide.with(this).load(R.drawable.bing_cache).into(bingImage);
+        Glide.with(this)
+                .load("https://www.dujin.org/sys/bing/1920.php")
+                .placeholder(R.drawable.bing_cache)//加载过程中的资源
+                .diskCacheStrategy(DiskCacheStrategy.NONE)//不进行缓存
+                .into(bingImage);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         setSupportActionBar(toolbar);
@@ -49,7 +61,6 @@ public class ZhihuActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         collapsingToolbarLayout.setTitle("健康");
-
         getZhihu();
     }
 
@@ -101,9 +112,14 @@ public class ZhihuActivity extends AppCompatActivity {
         Matcher matcher = pattern.matcher(responseString);
         Boolean isFind = matcher.find();
         while (isFind) {
-            //System.out.println("1 " + matcher.group(1) + "\n2  " + matcher.group(2) + "\n5  "+ matcher.group(5));
             //  定义一个知乎对象来存储抓取到的信息
             Zhihu zhihuTemp = new Zhihu(matcher.group(1), matcher.group(2), matcher.group(5));
+            System.out.println("1 "+ matcher.group(1)
+                    +"2 "+ matcher.group(2)
+                    +"3 "+ matcher.group(3)
+                    +"4 "+ matcher.group(4)
+                    +"5 "+ matcher.group(5)
+            );
             // 添加成功匹配的结果
             ZhihuList.add(zhihuTemp);
             // 继续查找下一个匹配对象

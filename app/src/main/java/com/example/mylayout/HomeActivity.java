@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -33,13 +34,16 @@ import com.bumptech.glide.Glide;
 import com.example.mylayout.gson.Weather;
 import com.example.mylayout.util.HttpUtil;
 import com.example.mylayout.util.ImageFactory;
+import com.example.mylayout.util.Post;
 import com.example.mylayout.util.UpdateDate;
 import com.example.mylayout.util.Utilty;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
@@ -58,7 +62,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navView;
     private ImageView bingPicHome;
     private SharedPreferences pref;
-
+    private List<Fun> funList = new ArrayList<>();
+    private FunAdapter adapter;
+    private Uri imageUri;
+    private String account;
     private Fun[] funs = {
             new Fun("健身录", R.drawable.fun_run, "#5653ef"),
             new Fun("测心率", R.drawable.fun_xinlv, "#7824cc"),
@@ -67,14 +74,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             new Fun("消息站", R.drawable.fun_mail, "#37a5e5"),
             new Fun("轻松购", R.drawable.fun_buy, "#576866")
     };
-    private List<Fun> funList = new ArrayList<>();
-    private FunAdapter adapter;
-    private Uri imageUri;
-    private String account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //融为一体
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.activity_home);
 
         //读取登陆活动传过来的用户名
@@ -117,7 +126,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         //首页标题的一些设置
         TextView welcome = (TextView) findViewById(R.id.status);
-        welcome.setText("欢迎 用户:" + account);
+        welcome.setText(getHello()+ ", " + account);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -133,41 +142,40 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         navView.setNavigationItemSelectedListener(this);
 
         //卡片式布局
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);//两列
+        recyclerView.setLayoutManager(layoutManager);
         for (int i = 0; i < funs.length; i++) {
             funList.add(funs[i]);
-        }
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new FunAdapter(funList);
-        recyclerView.setAdapter(adapter);
+            adapter = new FunAdapter(funList);
+            recyclerView.setAdapter(adapter);
 
-        //解析天气信息
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        String weatherString = pref.getString("weather", null);
-        TextView suggestionText = (TextView) findViewById(R.id.suggestion_text);
-        TextView degreeText = (TextView) headerView.findViewById(R.id.now_weather);
-        if (weatherString != null) {
-            Weather weather = Utilty.handleWeatherResponse(weatherString);
-            suggestionText.setText("  " + weather.suggestion.flu.txt + "\n  " + weather.suggestion.sport.txt);
-            degreeText.setText(weather.basic.city + "  " + weather.now.tmp + "℃");
-        } else {
-            suggestionText.setText("  暂无天气信息，请首先在侧拉栏获取天气信息");
-        }
+            //解析天气信息
+            String weatherString = pref.getString("weather", null);
+            TextView suggestionText = (TextView) findViewById(R.id.suggestion_text);
+            TextView degreeText = (TextView) headerView.findViewById(R.id.now_weather);
+            if (weatherString != null) {
+                Weather weather = Utilty.handleWeatherResponse(weatherString);
+                suggestionText.setText("  " + weather.suggestion.flu.txt + "\n  " + weather.suggestion.sport.txt);
+                degreeText.setText(weather.basic.city + "  " + weather.now.tmp + "℃");
+            } else {
+                suggestionText.setText("  暂无天气信息，请首先在滑动菜单获取天气信息");
+            }
 
-        //高斯模糊
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        bingPicHome = (ImageView) findViewById(R.id.bing_pic_home);
-        String bingPic = prefs.getString("bing_pic", null);
-        if (bingPic != null) {
-            Glide.with(HomeActivity.this)
-                    .load(bingPic)
-                    .crossFade(1000)
-                    .placeholder(R.drawable.bing_cache)
-                    .bitmapTransform(new BlurTransformation(HomeActivity.this, 23, 4)) // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
-                    .into(bingPicHome);
-        } else {
-            loadBingPic();
+            //高斯模糊
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            bingPicHome = (ImageView) findViewById(R.id.bing_pic_home);
+            String bingPic = prefs.getString("bing_pic", null);
+            if (bingPic != null) {
+                Glide.with(HomeActivity.this)
+                        .load(bingPic)
+                        .crossFade(1000)
+                        .placeholder(R.drawable.bing_cache)
+                        .bitmapTransform(new BlurTransformation(HomeActivity.this, 23, 4)) // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
+                        .into(bingPicHome);
+            } else {
+                loadBingPic();
+            }
         }
     }
 
@@ -226,6 +234,27 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    public String getHello() {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH");
+        Date curDate = new Date(System.currentTimeMillis());
+        String str = formatter.format(curDate);
+        int hour = Integer.parseInt(str);
+        //凌晨：0-2点   黎明：4-5点   拂晓：4-6点   清晨：6-7点   早晨：6-8点   上午：8-11点   中午：11-13点   下午：14-17点   晚上：18-22点   傍晚：17-18点   黄昏：16-17点   午夜：23-1点   夜间：19-5点
+        if (hour >= 22 && hour <= 6) {
+            return "睡觉时间";
+        } else if (hour >= 7 && hour <= 8) {
+            return "早上好";
+        } else if (hour >= 9 && hour <= 11) {
+            return "上午好";
+        } else if (hour >= 12 && hour <= 14) {
+            return "中午好";
+        } else if (hour >= 15 && hour <= 19) {
+            return "下午好";
+        } else {
+            return "晚上好";
+        }
+    }
+
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
         return true;
@@ -239,7 +268,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.update:
                 Toast.makeText(this, "正在上传数据...", Toast.LENGTH_SHORT).show();
-                sendRequestWithOkHttp();
+                //sendRequestWithOkHttp();
+                sendRequestWithPost();
                 break;
             case R.id.settings:
                 Intent intent = new Intent(this, SettingActivity.class);
@@ -255,20 +285,22 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void sendRequestWithOkHttp() {
+    private void sendRequestWithPost() {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        final String xuetang = pref.getString("xuetang", "");
-        final String jianshen = pref.getString("jianshen", "");
-        final String xueya = pref.getString("xueya", "");
-        final String xinlv = pref.getString("xinlv", "");
-        final RequestBody requestBody = new FormBody.Builder()
+        String xuetang = pref.getString("xuetang", "");
+        String jianshen = pref.getString("jianshen", "");
+        String xueya = pref.getString("xueya", "");
+        String xinlv = pref.getString("xinlv", "");
+        RequestBody requestBody = new FormBody.Builder()
+                .add("username", "username")
+                .add("password", "password")
                 .add("xuetang", xuetang)
                 .add("jianshen", jianshen)
                 .add("xueya", xueya)
                 .add("xinlv", xinlv)
                 .build();
-        String url = "http://192.168.191.1/index.php/?username=username&password=password&xuetang=" + xuetang + "&jianshen=" + jianshen + "&xueya=" + xueya + "&xinlv=" + xinlv;
-        HttpUtil.sendOKHttpResquest(url, new Callback() {
+        String url = "http://192.168.191.1/index.php";
+        Post.sendOKHttpResquest(requestBody, url, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
