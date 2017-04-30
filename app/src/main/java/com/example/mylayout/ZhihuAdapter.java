@@ -8,8 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +29,14 @@ public class ZhihuAdapter extends RecyclerView.Adapter<ZhihuAdapter.ViewHolder> 
         CardView cardView;
         TextView zhihuTitle;
         TextView zhihuNumber;
+        ImageView icon;
 
         public ViewHolder(View view) {
             super(view);
             cardView = (CardView) view;
             zhihuTitle = (TextView) view.findViewById(R.id.zhihu_title);
             zhihuNumber = (TextView) view.findViewById(R.id.zhihu_number);
+            icon = (ImageView) view.findViewById(R.id.userIcon);
         }
     }
 
@@ -65,6 +70,7 @@ public class ZhihuAdapter extends RecyclerView.Adapter<ZhihuAdapter.ViewHolder> 
         Zhihu zhihu = mZhihuList.get(position);
         holder.zhihuTitle.setText(zhihu.getTitle());
         holder.zhihuNumber.setText(zhihu.getNumber());
+        Glide.with(mContext).load(zhihu.getPic()).into(holder.icon);
     }
 
     @Override

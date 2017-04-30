@@ -3,6 +3,7 @@ package com.example.mylayout;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -32,6 +34,8 @@ public class ZhihuActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     LinearLayoutManager layoutManager;
     ImageView bingImage;
+    Button back;
+    FloatingActionButton f5Button;
     private ArrayList<Zhihu> ZhihuList = new ArrayList<>();
     private String responseString = "";
     private ZhihuAdapter adapter;
@@ -57,11 +61,19 @@ public class ZhihuActivity extends AppCompatActivity {
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+//        if (actionBar != null) {
+//            actionBar.setDisplayHomeAsUpEnabled(true);
+//        }
         collapsingToolbarLayout.setTitle("健康");
         getZhihu();
+        f5Button = (FloatingActionButton) findViewById(R.id.f5);
+        f5Button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                getZhihu();
+            }
+        });
+        back = (Button) findViewById(R.id.back_button);
     }
 
     @Override
@@ -108,18 +120,26 @@ public class ZhihuActivity extends AppCompatActivity {
 
     public static ArrayList<Zhihu> getNews(String responseString) {
         ArrayList<Zhihu> ZhihuList = new ArrayList<>();
-        Pattern pattern = Pattern.compile("<h2>.+?question_link.+?href=\"(.+?)\".+?>\\n(([^x00-xff]|.)+?)</a>(.|\\n)+?data-bind-votecount>(.+?)</a>");
+//        Pattern pattern = Pattern.compile("<h2>.+?question_link.+?href=\"(.+?)\".+?>\\n(([^x00-xff]|.)+?)</a>(.|\\n)+?data-bind-votecount>(.+?)</a>");
+        Pattern pattern = Pattern.compile("<h2>.+?question_link.+?href=\"(.+?)\".+?>\\n(([^x00-xff]|.)+?)</a>(.|\\n)+?data-bind-votecount>(.+?)</a>" +
+                "(.|\\n)+?<img src=\"(.+?)\"(.|\\n)+?</div>\\n</div>\\n</div>\\n</div>");
+
+//        clearfix">
+//                <img src="https://pic1.zhimg.com/v2-918454d6591d77f77307037c8e75bc78_200x112.jpg" data-rawwidth
         Matcher matcher = pattern.matcher(responseString);
         Boolean isFind = matcher.find();
         while (isFind) {
             //  定义一个知乎对象来存储抓取到的信息
-            Zhihu zhihuTemp = new Zhihu(matcher.group(1), matcher.group(2), matcher.group(5));
-            System.out.println("1 "+ matcher.group(1)
-                    +"2 "+ matcher.group(2)
-                    +"3 "+ matcher.group(3)
-                    +"4 "+ matcher.group(4)
-                    +"5 "+ matcher.group(5)
-            );
+            Zhihu zhihuTemp = new Zhihu(matcher.group(1), matcher.group(2), matcher.group(5), matcher.group(7));
+//            System.out.println("1 " + matcher.group(1) + "\n"
+//                    + "2 " + matcher.group(2) + "\n"
+//                    + "3 " + matcher.group(3) + "\n"
+//                    + "4 " + matcher.group(4) + "\n"
+//                    + "5 " + matcher.group(5) + "\n"
+//                    + "6 " + matcher.group(6) + "\n"
+//                    + "7 " + matcher.group(7) + "\n"
+//            );
+
             // 添加成功匹配的结果
             ZhihuList.add(zhihuTemp);
             // 继续查找下一个匹配对象

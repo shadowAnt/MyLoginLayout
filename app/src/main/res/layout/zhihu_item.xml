@@ -1,11 +1,9 @@
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    app:cardCornerRadius="8dp"
-    >
+    android:layout_margin="8dp"
+    app:cardCornerRadius="5dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,21 +11,36 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/zhihu_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:text="Title"
             android:layout_margin="5dp"
-            android:id="@+id/zhihu_title"/>
+            android:layout_marginLeft="5dp"
+            android:text="Title"
+            android:textSize="20sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:text="number"
-            android:id="@+id/zhihu_number"
-            android:layout_gravity="right"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="20dp"/>
+            android:layout_marginBottom="10dp">
+
+            <ImageView
+                android:id="@+id/userIcon"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dp"
+                />
+
+            <TextView
+                android:id="@+id/zhihu_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="number"
+                android:textSize="12sp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp" />
+        </RelativeLayout>
+
     </LinearLayout>
 </android.support.v7.widget.CardView>

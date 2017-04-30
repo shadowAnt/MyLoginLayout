@@ -11,6 +11,11 @@ public class Zhihu {
     private String url;
     private String title;
     private String number;
+    private String pic;
+
+    public String getPic() {
+        return pic;
+    }
 
     public String getNumber() {
         return number;
@@ -24,7 +29,7 @@ public class Zhihu {
         return url;
     }
 
-    public Zhihu(String url, String title, String number) {
+    public Zhihu(String url, String title, String number, String pic) {
         Pattern pattern = Pattern.compile("question/(.*?)/");
         Matcher matcher = pattern.matcher(url);
         if (matcher.find()) {
@@ -34,6 +39,7 @@ public class Zhihu {
         }
         this.title = title + "  ";
         this.number = "回答数: " + number;
+        this.pic = pic;
     }
 
     @Override
