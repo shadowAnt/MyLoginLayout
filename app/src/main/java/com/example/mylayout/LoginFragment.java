@@ -136,6 +136,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                         .add("password", tmp)
                         .build();
                 String url = "http://192.168.191.1/index.php";
+//                String url = "http://192.168.252.1:8080/population/AppLogin";
                 //通过服务器上网
                 if (!(account.equals("123") && tmp.equals("123456"))) {
                     Post.sendOKHttpResquest(requestBody, url, new Callback() {

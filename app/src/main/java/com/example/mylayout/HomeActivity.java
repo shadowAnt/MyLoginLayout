@@ -227,6 +227,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 Intent intent1 = new Intent(HomeActivity.this, ZhihuActivity.class);
                 startActivity(intent1);
                 break;
+            case R.id.nav_location:
+                //TODO
+                Intent intentLocation = new Intent(HomeActivity.this, LocationActivity.class);
+                startActivity(intentLocation);
+                item.setCheckable(false);
+                break;
             default:
         }
         navView.setCheckedItem(R.id.nav_home);

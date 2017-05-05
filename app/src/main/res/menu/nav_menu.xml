@@ -19,5 +19,9 @@
             android:title="健康资讯"
             android:icon="@drawable/nav_zhihu"
             android:id="@+id/nav_zhihu"/>
+        <item
+            android:title="定位"
+            android:icon="@drawable/nav_location"
+            android:id="@+id/nav_location" />
     </group>
 </menu>
