@@ -1,12 +1,10 @@
-# MyLoginLayout
+# 练手APP
+实现的功能
 
-##第一次使用md
+1. 天气
+2. 一键拨号
+3. 高德地图定位
+4. 知乎爬虫
+5. 更改头像
+6. 登录功能
 
-[这是一个可以点击的网站](https://github.com/shadowAnt/MyLoginLayout/blob/master/README.md)
-<https://github.com/shadowAnt/MyLoginLayout/blob/master/README.md>
----
->这是引用的内容  >符号
-
-```
-代码段
-```
