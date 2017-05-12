@@ -23,6 +23,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -119,14 +120,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 Intent intent1 = new Intent(HomeActivity.this, ChangeIconActivity.class);
-                startActivity(intent1);
-                finish();
+                startActivityForResult(intent1, 1);
             }
         });
 
         //首页标题的一些设置
         TextView welcome = (TextView) findViewById(R.id.status);
-        welcome.setText(getHello()+ ", " + account);
+        welcome.setText(getHello() + ", " + account);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -359,6 +359,55 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 break;
             default:
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 1:
+                View headerView = navView.getHeaderView(0);//setContentView把View设置为activity_home，但是滑动窗口在nav_view中
+                ImageView userIcon = (ImageView) headerView.findViewById(R.id.nav_icon_image);
+                File outputImage = new File(getExternalCacheDir(), "output_image.jpg");
+                if (outputImage.length() != 0) {
+                    if (Build.VERSION.SDK_INT >= 24) {
+                        imageUri = FileProvider.getUriForFile(HomeActivity.this, "com.example.mylayout.fileprovider", outputImage);
+                    } else {
+                        imageUri = Uri.fromFile(outputImage);
+                    }
+                    try {
+                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        ImageFactory imageFactory = new ImageFactory();
+                        bitmap = imageFactory.ratio(bitmap, 200, 200);
+                        userIcon.setImageBitmap(bitmap);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    userIcon.setImageResource(R.drawable.icon_user);
+                }
+                break;
+            default:
+        }
+    }
+
+    private long firstTime = 0;
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+        switch(keyCode)
+        {
+            case KeyEvent.KEYCODE_BACK:
+                long secondTime = System.currentTimeMillis();
+                if (secondTime - firstTime > 2000) {                                         //如果两次按键时间间隔大于2秒，则不退出
+                    Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                    firstTime = secondTime;//更新firstTime
+                    return true;
+                } else {                                                    //两次按键小于2秒时，退出应用
+                    System.exit(0);
+                }
+                break;
+        }
+        return super.onKeyUp(keyCode, event);
     }
 }
 
