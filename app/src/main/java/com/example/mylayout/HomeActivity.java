@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.mylayout.friend.FriendListActivity;
 import com.example.mylayout.gson.Weather;
 import com.example.mylayout.util.HttpUtil;
 import com.example.mylayout.util.ImageFactory;
@@ -51,8 +52,6 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import space.wangjiang.toaster.Toaster;
@@ -233,6 +232,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intentLocation);
                 item.setCheckable(false);
                 break;
+            case R.id.nav_friend:
+                //TODO 打开好友列表
+                Intent friendIntent = new Intent(this, FriendListActivity.class);
+                startActivity(friendIntent);
+                break;
             default:
         }
         navView.setCheckedItem(R.id.nav_home);
@@ -394,15 +398,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         // TODO Auto-generated method stub
-        switch(keyCode)
-        {
+        switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
                 long secondTime = System.currentTimeMillis();
-                if (secondTime - firstTime > 2000) {                                         //如果两次按键时间间隔大于2秒，则不退出
+                if (secondTime - firstTime > 2000) {//如果两次按键时间间隔大于2秒，则不退出
                     Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
                     firstTime = secondTime;//更新firstTime
                     return true;
-                } else {                                                    //两次按键小于2秒时，退出应用
+                } else {//两次按键小于2秒时，退出应用
                     System.exit(0);
                 }
                 break;

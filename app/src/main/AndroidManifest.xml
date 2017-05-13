@@ -24,7 +24,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <!-- 用于申请调用A-GPS模块 -->
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
-    <!-- 用于申请获取蓝牙信息进行室内定位 -->
+    <!-- 用于申请获取蓝牙信息进行室内定位 android:name="com.example.test.json.responseJson"  -->
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
@@ -71,6 +71,8 @@
         </provider>
 
         <activity android:name=".LocationActivity" />
+        <activity android:name=".friend.FriendListActivity"></activity>
+
         <meta-data android:name="com.amap.api.v2.apikey" android:value="daf8c822ab90af5a7fb5f9c229e7cdbc">
         </meta-data>
     </application>

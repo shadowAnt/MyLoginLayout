@@ -21,18 +21,26 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.mylayout.json.friend;
+import com.example.mylayout.json.patInfo;
+import com.example.mylayout.json.responseJson;
 import com.example.mylayout.util.HttpUtil;
 import com.example.mylayout.util.ImageFactory;
 import com.example.mylayout.util.Post;
+import com.google.gson.Gson;
 import com.scottyab.aescrypt.AESCrypt;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import okhttp3.Call;
@@ -60,6 +68,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     private static String password;
     private ProgressDialog progressDialog;
     private Button login;
+    EditText editText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,6 +88,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         passwordEdit = (AutoCompleteTextView) view.findViewById(R.id.password);
         iconImage = (ImageView) view.findViewById(R.id.icon_image);
         gaosiLogin = (ImageView) view.findViewById(R.id.gaosi_login);
+        editText = (EditText) view.findViewById(R.id.input_editText);
+
 
         pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         load_account_password();//加载用户名，根据上次保存密码与否进行读入密码
@@ -129,14 +140,18 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
             case R.id.login:
                 showProgressDialog();
                 account = accountEdit.getText().toString();
+                String input = editText.getText().toString();
                 password = passwordEdit.getText().toString();//得到输入的用户名和密码
                 String tmp = password;
                 RequestBody requestBody = new FormBody.Builder()
                         .add("username", account)
                         .add("password", tmp)
                         .build();
-                String url = "http://192.168.191.1/index.php";
+//                String url = "http://192.168.191.1/index.php";
 //                String url = "http://192.168.252.1:8080/population/AppLogin";
+//                String url = getString(R.string.URL);
+//                url += "/AppLogin";
+                String url = "http://" + input + ":8080/population/AppLogin";
                 //通过服务器上网
                 if (!(account.equals("123") && tmp.equals("123456"))) {
                     Post.sendOKHttpResquest(requestBody, url, new Callback() {
@@ -154,7 +169,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             final String responseText = response.body().string();
-                            if (!responseText.equals("success")) {
+                            if (responseText.equals("false")) {
                                 //登录失败的处理
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
@@ -167,6 +182,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        //TODO 把返回的json解析
+                                        responseJson resultTemp = handle(responseText);
+                                        responseJson.setFrinedList(resultTemp.frinedList);
+                                        responseJson.setSelf(resultTemp.self);
                                         Toaster.success(getActivity(), "登录成功!", Toaster.LENGTH_LONG).show();
                                     }
                                 });
@@ -235,11 +254,77 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     }
 
     private void next(){
+//        String responseText = "{\n" +
+//                "    \"patInfo\": {\n" +
+//                "        \"patIdCard\": \"1111111\",\n" +
+//                "        \"patName\": \"病人1\",\n" +
+//                "        \"patAccount\": \"P1111111\"\n" +
+//                "    },\n" +
+//                "    \"friends\": {\n" +
+//                "        \"0\": {\n" +
+//                "            \"docName\": \"林涛\",\n" +
+//                "            \"docId\": \"340621199604270312\",\n" +
+//                "            \"docAccount\": \"E41414049\"\n" +
+//                "        },\n" +
+//                "        \"1\": {\n" +
+//                "            \"docName\": \"赵子彰\",\n" +
+//                "            \"docId\": \"340621199604270313\",\n" +
+//                "            \"docAccount\": \"E41414047\"\n" +
+//                "        }\n" +
+//                "    }\n" +
+//                "}";
+        String responseText = "{\n" +
+                "    \"patInfo\": {\n" +
+                "        \"patIdCard\": \"1111111\", \n" +
+                "        \"patName\": \"病人1\", \n" +
+                "        \"patAccount\": \"P1111111\"\n" +
+                "    }, \n" +
+                "    \"friends\": {\n" +
+                "        \"0\": {\n" +
+                "            \"docName\": \"林涛\", \n" +
+                "            \"docId\": \"340621199604270312\", \n" +
+                "            \"docAccount\": \"E41414049\"\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+        responseJson resultTemp = handle(responseText);
+        responseJson.setFrinedList(resultTemp.frinedList);
+        responseJson.setSelf(resultTemp.self);
         save_account_password();//保存
         //点击按钮生成一个Intent，传递信息给HomeActivity
         Intent intent = new Intent(getActivity(), HomeActivity.class);
         startActivity(intent);
         //结束掉登录界面活动
         getActivity().finish();
+    }
+
+    public responseJson handle(String response) {
+        responseJson result = new responseJson();
+        result.frinedList = new ArrayList();
+        friend one = new friend("姓名", "序号", "序号");
+        result.frinedList.add(one);
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            if (jsonObject.length() == 2) {
+                JSONObject frsObject = jsonObject.getJSONObject("friends");
+                int lenth = frsObject.length();//2
+                for (int i = 0; i < lenth; i++) {
+                    String ans = i + "";
+                    JSONObject frsObjecti = frsObject.getJSONObject(ans);
+                    String frsStringi = frsObjecti.toString();
+                    friend fritemp = new Gson().fromJson(frsStringi, friend.class);
+                    result.frinedList.add(fritemp);
+                    Log.d("add", "成功添加" + i);
+                }
+            }
+            JSONObject patObject = jsonObject.getJSONObject("patInfo");
+            String patString = patObject.toString();
+            patInfo patinfo = new Gson().fromJson(patString, patInfo.class);
+            result.self = patinfo;
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

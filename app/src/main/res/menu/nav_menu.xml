@@ -23,5 +23,9 @@
             android:title="定位"
             android:icon="@drawable/nav_location"
             android:id="@+id/nav_location" />
+        <item
+            android:title="好友列表"
+            android:icon="@drawable/friend"
+            android:id="@+id/nav_friend" />
     </group>
 </menu>
