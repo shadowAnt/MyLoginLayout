@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.mylayout.QueryActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="请输入要查询的序号区间" />
+
+        <EditText
+            android:id="@+id/startQuery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="起始序号" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="~" />
+
+        <EditText
+            android:id="@+id/endQuery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="终止序号" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/queryJianshen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/btn_selector"
+        android:gravity="center"
+        android:text="查询健身情况"
+        android:textColor="#fff" />
+
+    <Button
+        android:id="@+id/queryXinlv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/btn_selector"
+        android:gravity="center"
+        android:text="查询心率"
+        android:textColor="#fff" />
+
+    <Button
+        android:id="@+id/queryXuetang"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/btn_selector"
+        android:gravity="center"
+        android:text="查询血糖"
+        android:textColor="#fff" />
+
+    <Button
+        android:id="@+id/queryXueya"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/btn_selector"
+        android:gravity="center"
+        android:text="查询血压"
+        android:textColor="#fff" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_marginTop="5dp"
+        android:background="#696969" />
+
+    <tech.linjiang.suitlines.SuitLines
+        xmlns:line="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/QuerySuitlines"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="10dp"
+        line:xySize="8"
+        line:xyColor="@color/colorAccent"
+        line:lineType="curve"
+        line:needEdgeEffect="true"
+        line:colorEdgeEffect="@color/colorPrimaryDark"
+        line:needClickHint="true"
+        line:colorHint="@color/colorPrimary"
+        line:maxOfVisible="7"
+        line:countOfY="6"/>
+</LinearLayout>

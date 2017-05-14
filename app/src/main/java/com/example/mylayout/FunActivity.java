@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,8 +17,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import tech.linjiang.suitlines.SuitLines;
+import tech.linjiang.suitlines.Unit;
 
 public class FunActivity extends AppCompatActivity {
 
@@ -56,6 +62,28 @@ public class FunActivity extends AppCompatActivity {
 
         String funSuggestion = initFunSuggestion(funName);
         funSuggestionText.setText(funSuggestion);
+
+
+        SuitLines suitLines = (SuitLines) findViewById(R.id.suitlines);
+        List<Unit> lines = new ArrayList<>();
+        //TODO 把funContent 里面的内容按\n 分割，放到数组中
+        Log.e("funContent", funContent);
+        float[] ans = change(funContent);
+        int len = ans.length;
+        for (int i = 0; i < len; i++) {
+            lines.add(new Unit(ans[i], i + ""));
+        }
+        suitLines.feedWithAnim(lines);
+    }
+
+    public float[] change(String str) {
+        String[] split = str.split("\n");
+        int len = split.length;
+        float[] ans = new float[len];
+        for (int i = 0; i < len; i++) {
+            ans[i] = Float.parseFloat(split[i]);
+        }
+        return ans;
     }
 
     private String initFunContent(String funName) {
@@ -140,7 +168,7 @@ public class FunActivity extends AppCompatActivity {
 
     public String initMsg() {
         String tmp = pref.getString("updateResult", "还未发送任何信息");
-        if(!tmp.equals("还未发送任何信息")&&tmp!=""){
+        if (!tmp.equals("还未发送任何信息") && tmp != "") {
             String[] sourceStrArray = tmp.split("success");
             return sourceStrArray[1];
         }

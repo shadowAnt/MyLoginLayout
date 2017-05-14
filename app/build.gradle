@@ -52,4 +52,6 @@ dependencies {
     compile 'com.github.Wang-Jiang:Toaster:v0.1'
     compile 'com.scottyab:aescrypt:0.0.1'
 
+    compile 'tech.linjiang:suitlines:1.0.0'
+
 }

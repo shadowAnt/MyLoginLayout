@@ -1,6 +1,7 @@
 package com.example.mylayout;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -27,6 +28,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,10 +72,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             new Fun("健身录", R.drawable.fun_run, "#5653ef"),
             new Fun("测心率", R.drawable.fun_xinlv, "#7824cc"),
             new Fun("测血糖", R.drawable.fun_xuetang, "#37353A"),
-            new Fun("量血压", R.drawable.fun_xueya, "#1E5798"),
-            new Fun("消息站", R.drawable.fun_mail, "#37a5e5"),
-            new Fun("轻松购", R.drawable.fun_buy, "#576866")
+            new Fun("量血压", R.drawable.fun_xueya, "#1E5798")
     };
+//    ,
+//            new Fun("消息站", R.drawable.fun_mail, "#37a5e5"),
+//    new Fun("轻松购", R.drawable.fun_buy, "#576866")
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,34 +151,51 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             funList.add(funs[i]);
             adapter = new FunAdapter(funList);
             recyclerView.setAdapter(adapter);
-
-            //解析天气信息
-            String weatherString = pref.getString("weather", null);
-            TextView suggestionText = (TextView) findViewById(R.id.suggestion_text);
-            TextView degreeText = (TextView) headerView.findViewById(R.id.now_weather);
-            if (weatherString != null) {
-                Weather weather = Utilty.handleWeatherResponse(weatherString);
-                suggestionText.setText("  " + weather.suggestion.flu.txt + "\n  " + weather.suggestion.sport.txt);
-                degreeText.setText(weather.basic.city + "  " + weather.now.tmp + "℃");
-            } else {
-                suggestionText.setText("  暂无天气信息，请首先在滑动菜单获取天气信息");
-            }
-
-            //高斯模糊
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            bingPicHome = (ImageView) findViewById(R.id.bing_pic_home);
-            String bingPic = prefs.getString("bing_pic", null);
-            if (bingPic != null) {
-                Glide.with(HomeActivity.this)
-                        .load(bingPic)
-                        .crossFade(1000)
-                        .placeholder(R.drawable.bing_cache)
-                        .bitmapTransform(new BlurTransformation(HomeActivity.this, 23, 4)) // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
-                        .into(bingPicHome);
-            } else {
-                loadBingPic();
-            }
         }
+        //解析天气信息
+        String weatherString = pref.getString("weather", null);
+        TextView suggestionText = (TextView) findViewById(R.id.suggestion_text);
+        TextView degreeText = (TextView) headerView.findViewById(R.id.now_weather);
+        if (weatherString != null) {
+            Weather weather = Utilty.handleWeatherResponse(weatherString);
+            suggestionText.setText("  " + weather.suggestion.flu.txt + "\n  " + weather.suggestion.sport.txt);
+            degreeText.setText(weather.basic.city + "  " + weather.now.tmp + "℃");
+        } else {
+            suggestionText.setText("  暂无天气信息，请首先在滑动菜单获取天气信息");
+        }
+
+        //高斯模糊
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        bingPicHome = (ImageView) findViewById(R.id.bing_pic_home);
+        String bingPic = prefs.getString("bing_pic", null);
+        if (bingPic != null) {
+            Glide.with(HomeActivity.this)
+                    .load(bingPic)
+                    .crossFade(1000)
+                    .placeholder(R.drawable.bing_cache)
+                    .bitmapTransform(new BlurTransformation(HomeActivity.this, 23, 4)) // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
+                    .into(bingPicHome);
+        } else {
+            loadBingPic();
+        }
+
+        //TODO 生成数据
+        UpdateDate updateDate = new UpdateDate(HomeActivity.this);
+        SharedPreferences sp = getSharedPreferences("shenti", MODE_APPEND);
+        SharedPreferences.Editor spEd = sp.edit();
+        String ans = updateDate.update_date();
+        spEd.putString("data", ans);
+        spEd.apply();
+        //查询
+        Button queryButton = (Button) findViewById(R.id.query);
+        queryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomeActivity.this, QueryActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     private void loadBingPic() {
@@ -288,7 +308,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.connect:
                 Toast.makeText(this, "正在更新数据...", Toast.LENGTH_SHORT).show();
                 UpdateDate updateDate = new UpdateDate(HomeActivity.this);
-                updateDate.update_date();
+                SharedPreferences sp = getSharedPreferences("shenti", MODE_APPEND);
+                SharedPreferences.Editor spEd = sp.edit();
+                String ans = updateDate.update_date();
+                spEd.putString("data", ans);
+                spEd.apply();
                 break;
             default:
         }
@@ -395,6 +419,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private long firstTime = 0;
+
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         // TODO Auto-generated method stub

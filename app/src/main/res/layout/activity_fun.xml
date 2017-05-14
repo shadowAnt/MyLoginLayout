@@ -49,6 +49,31 @@
                 android:layout_marginBottom="15dp"
                 android:layout_marginTop="35dp"
                 android:layout_marginRight="15dp"
+                app:cardCornerRadius="1dp">
+
+                <tech.linjiang.suitlines.SuitLines
+                    xmlns:line="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/suitlines"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    line:xySize="8"
+                    line:xyColor="@color/colorAccent"
+                    line:lineType="curve"
+                    line:needEdgeEffect="true"
+                    line:colorEdgeEffect="@color/colorPrimaryDark"
+                    line:needClickHint="true"
+                    line:colorHint="@color/colorPrimary"
+                    line:maxOfVisible="7"
+                    line:countOfY="6"/>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginTop="35dp"
+                android:layout_marginRight="15dp"
                 app:cardCornerRadius="4dp">
 
                     <TextView

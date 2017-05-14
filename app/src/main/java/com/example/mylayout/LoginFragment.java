@@ -23,12 +23,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.mylayout.json.friend;
 import com.example.mylayout.json.patInfo;
 import com.example.mylayout.json.responseJson;
-import com.example.mylayout.util.HttpUtil;
 import com.example.mylayout.util.ImageFactory;
 import com.example.mylayout.util.Post;
 import com.google.gson.Gson;
@@ -253,7 +253,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void next(){
+    private void next() {
 //        String responseText = "{\n" +
 //                "    \"patInfo\": {\n" +
 //                "        \"patIdCard\": \"1111111\",\n" +
