@@ -1,5 +1,7 @@
 package com.example.mylayout;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +18,10 @@ public class QueryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_query);
+
+        //TODO 得到url
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        String url = pref.getString("URL", "");
 
         SuitLines suitLines = (SuitLines) findViewById(R.id.QuerySuitlines);
         List<Unit> lines = new ArrayList<>();

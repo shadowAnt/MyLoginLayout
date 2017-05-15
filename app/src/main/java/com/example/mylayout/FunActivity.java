@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -28,6 +30,8 @@ import tech.linjiang.suitlines.Unit;
 public class FunActivity extends AppCompatActivity {
 
     SharedPreferences pref;
+    String shentiString;
+    String[] timeKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +61,13 @@ public class FunActivity extends AppCompatActivity {
         collapsingToolbarLayout.setTitle(funName);
         Glide.with(this).load(funImageId).into(funImageView);
 
-        String funContent = initFunContent(funName);
-        funContentText.setText(funContent);
+        String contentText = "";
+        float[] ans = initFunContent(funName);
+        int lenOfAns = ans.length;
+        for (int i = 0; i < lenOfAns; i++) {
+            contentText += i+"   "+timeKey[i] + "   :   " + ans[i] + "\n";
+        }
+        funContentText.setText(contentText);
 
         String funSuggestion = initFunSuggestion(funName);
         funSuggestionText.setText(funSuggestion);
@@ -66,51 +75,54 @@ public class FunActivity extends AppCompatActivity {
 
         SuitLines suitLines = (SuitLines) findViewById(R.id.suitlines);
         List<Unit> lines = new ArrayList<>();
-        //TODO 把funContent 里面的内容按\n 分割，放到数组中
-        Log.e("funContent", funContent);
-        float[] ans = change(funContent);
+        //TODO 加入到图表中ans为纵坐标
         int len = ans.length;
         for (int i = 0; i < len; i++) {
             lines.add(new Unit(ans[i], i + ""));
+//            lines.add(new Unit(ans[i], timeKey[i]));
         }
         suitLines.feedWithAnim(lines);
     }
 
-    public float[] change(String str) {
-        String[] split = str.split("\n");
+    private float[] initFunContent(String funName) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        shentiString = sp.getString("shentiData", "");
+        String[] split = shentiString.split("\\+");
         int len = split.length;
-        float[] ans = new float[len];
+        timeKey = new String[len];
+        float[] jianshenArray = new float[len];
+        float[] xueyaArray = new float[len];
+        float[] xuetangArray = new float[len];
+        float[] xinlvArray = new float[len];
         for (int i = 0; i < len; i++) {
-            ans[i] = Float.parseFloat(split[i]);
+            String[] keyString = split[i].split("\":");
+            String key = keyString[0];
+            String[] keyString1 = key.split("\\{\"");
+            Log.d("jsonObject", keyString1[1]);
+            timeKey[i] = keyString1[1];
+            try {
+                JSONObject jsonObject = new JSONObject(split[i]);
+                //TODO get
+                JSONObject js = jsonObject.getJSONObject(timeKey[i]);
+                jianshenArray[i] = (float) js.getDouble("jianshen");
+                xinlvArray[i] = (float) js.getDouble("xinlv");
+                xueyaArray[i] = (float) js.getDouble("xueya");
+                xuetangArray[i] = (float) js.getDouble("xuetang");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        return ans;
-    }
-
-    private String initFunContent(String funName) {
-        String content = "";
         switch (funName) {
             case "健身录":
-                content = initJianShen();
-                break;
+                return jianshenArray;
             case "测心率":
-                content = initXinLv();
-                break;
+                return xinlvArray;
             case "测血糖":
-                content = initXueTang();
-                break;
+                return xuetangArray;
             case "量血压":
-                content = initXueYa();
-                break;
-            case "消息站":
-                content = initMsg();
-                break;
-            case "轻松购":
-                content = initBuy();
-                break;
+                return xueyaArray;
         }
-        StringBuilder funContent = new StringBuilder();
-        funContent.append(content);
-        return funContent.toString();
+        return null;
     }
 
     private String initFunSuggestion(String funName) {
@@ -148,35 +160,6 @@ public class FunActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public String initJianShen() {
-        return pref.getString("jianshen", "未连接设备，暂无数据!");
-    }
-
-    public String initXinLv() {
-        return pref.getString("xinlv", "未连接设备，暂无数据!");
-    }
-
-    public String initXueTang() {
-        return pref.getString("xuetang", "未连接设备，暂无数据!");
-    }
-
-    public String initXueYa() {
-        return pref.getString("xueya", "未连接设备，暂无数据!");
-    }
-
-    public String initMsg() {
-        String tmp = pref.getString("updateResult", "还未发送任何信息");
-        if (!tmp.equals("还未发送任何信息") && tmp != "") {
-            String[] sourceStrArray = tmp.split("success");
-            return sourceStrArray[1];
-        }
-        return tmp;
-    }
-
-    public String initBuy() {
-        return "联系电话 ： 18856017129";
     }
 
     public String sugJianShen() {

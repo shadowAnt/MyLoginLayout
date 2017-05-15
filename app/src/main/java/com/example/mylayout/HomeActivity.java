@@ -24,6 +24,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,8 +40,11 @@ import com.example.mylayout.gson.Weather;
 import com.example.mylayout.util.HttpUtil;
 import com.example.mylayout.util.ImageFactory;
 import com.example.mylayout.util.Post;
+import com.example.mylayout.util.String2Json;
 import com.example.mylayout.util.UpdateDate;
 import com.example.mylayout.util.Utilty;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -181,11 +185,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         //TODO 生成数据
         UpdateDate updateDate = new UpdateDate(HomeActivity.this);
-        SharedPreferences sp = getSharedPreferences("shenti", MODE_APPEND);
-        SharedPreferences.Editor spEd = sp.edit();
-        String ans = updateDate.update_date();
-        spEd.putString("data", ans);
-        spEd.apply();
+        updateDate.update_date();
         //查询
         Button queryButton = (Button) findViewById(R.id.query);
         queryButton.setOnClickListener(new View.OnClickListener() {
@@ -308,11 +308,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.connect:
                 Toast.makeText(this, "正在更新数据...", Toast.LENGTH_SHORT).show();
                 UpdateDate updateDate = new UpdateDate(HomeActivity.this);
-                SharedPreferences sp = getSharedPreferences("shenti", MODE_APPEND);
-                SharedPreferences.Editor spEd = sp.edit();
-                String ans = updateDate.update_date();
-                spEd.putString("data", ans);
-                spEd.apply();
+                updateDate.update_date();
                 break;
             default:
         }
@@ -321,19 +317,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     private void sendRequestWithPost() {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        String xuetang = pref.getString("xuetang", "");
-        String jianshen = pref.getString("jianshen", "");
-        String xueya = pref.getString("xueya", "");
-        String xinlv = pref.getString("xinlv", "");
+        String url = pref.getString("URL", "");
+        String shentiData = pref.getString("shentiData", "");
+        JSONObject shentiJson = String2Json.string2json(shentiData);
+        Log.e("url+shentiJson", url + "    " + shentiJson.toString());
+
+        /*
         RequestBody requestBody = new FormBody.Builder()
-                .add("username", "username")
-                .add("password", "password")
-                .add("xuetang", xuetang)
-                .add("jianshen", jianshen)
-                .add("xueya", xueya)
-                .add("xinlv", xinlv)
                 .build();
-        String url = "http://192.168.191.1/index.php";
         Post.sendOKHttpResquest(requestBody, url, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -361,6 +352,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 });
             }
         });
+        */
     }
 
     private void call() {

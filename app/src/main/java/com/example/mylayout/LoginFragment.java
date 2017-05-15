@@ -69,6 +69,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     private ProgressDialog progressDialog;
     private Button login;
     EditText editText;
+    String input;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -140,7 +141,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
             case R.id.login:
                 showProgressDialog();
                 account = accountEdit.getText().toString();
-                String input = editText.getText().toString();
+                input = editText.getText().toString();
                 password = passwordEdit.getText().toString();//得到输入的用户名和密码
                 String tmp = password;
                 RequestBody requestBody = new FormBody.Builder()
@@ -230,6 +231,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         Log.d("加密", password);
         editor = pref.edit();
         editor.putString("account", account);//无脑存储用户名
+        editor.putString("URL", "http://" + input + ":8080/population/");
         if (rememberPass.isChecked()) {
             //根据记住密码与否存储密码
             editor.putBoolean("remember_password", true);
@@ -254,36 +256,22 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     }
 
     private void next() {
-//        String responseText = "{\n" +
-//                "    \"patInfo\": {\n" +
-//                "        \"patIdCard\": \"1111111\",\n" +
-//                "        \"patName\": \"病人1\",\n" +
-//                "        \"patAccount\": \"P1111111\"\n" +
-//                "    },\n" +
-//                "    \"friends\": {\n" +
-//                "        \"0\": {\n" +
-//                "            \"docName\": \"林涛\",\n" +
-//                "            \"docId\": \"340621199604270312\",\n" +
-//                "            \"docAccount\": \"E41414049\"\n" +
-//                "        },\n" +
-//                "        \"1\": {\n" +
-//                "            \"docName\": \"赵子彰\",\n" +
-//                "            \"docId\": \"340621199604270313\",\n" +
-//                "            \"docAccount\": \"E41414047\"\n" +
-//                "        }\n" +
-//                "    }\n" +
-//                "}";
         String responseText = "{\n" +
                 "    \"patInfo\": {\n" +
-                "        \"patIdCard\": \"1111111\", \n" +
-                "        \"patName\": \"病人1\", \n" +
+                "        \"patIdCard\": \"1111111\",\n" +
+                "        \"patName\": \"病人1\",\n" +
                 "        \"patAccount\": \"P1111111\"\n" +
-                "    }, \n" +
+                "    },\n" +
                 "    \"friends\": {\n" +
                 "        \"0\": {\n" +
-                "            \"docName\": \"林涛\", \n" +
-                "            \"docId\": \"340621199604270312\", \n" +
+                "            \"docName\": \"林涛\",\n" +
+                "            \"docId\": \"340621199604270312\",\n" +
                 "            \"docAccount\": \"E41414049\"\n" +
+                "        },\n" +
+                "        \"1\": {\n" +
+                "            \"docName\": \"赵子彰\",\n" +
+                "            \"docId\": \"340621199604270313\",\n" +
+                "            \"docAccount\": \"E41414047\"\n" +
                 "        }\n" +
                 "    }\n" +
                 "}";

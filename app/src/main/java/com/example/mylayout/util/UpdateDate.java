@@ -63,23 +63,7 @@ public class UpdateDate {
         return shou + "";
     }
 
-    public String update_date() {
-//        String originJianshen;
-//        originJianshen = pref.getString("jianshen", "0");
-//        editor.putString("jianshen", originJianshen +"\n"+ initJianShen());
-//
-//        String originXinlv;
-//        originXinlv = pref.getString("xinlv", "72");
-//        editor.putString("xinlv", originXinlv + "\n" + initXinLv());
-//
-//        String originXuetang;
-//        originXuetang = pref.getString("xuetang", "7");
-//        editor.putString("xuetang", originXuetang+ "\n" + initXueTang());
-//
-//        String originXueya;
-//        originXueya = pref.getString("xueya", "105");
-//        editor.putString("xueya", originXueya+"\n" + initXueYa());
-//        editor.apply();
+    public void update_date() {
         String jianshenTemp = initJianShen();
         String xinlvTemp = initXinLv();
         String xuetangTemp = initXueTang();
@@ -89,28 +73,27 @@ public class UpdateDate {
         String str = formatter.format(curDate);
         JSONObject jsonObject = new JSONObject();
         JSONObject ingredients = new JSONObject();
-//        Map<String, String> ingredients = new HashMap<String, String>();
-        try{
+        try {
             ingredients.put("jianshen", jianshenTemp);
             ingredients.put("xinlv", xinlvTemp);
             ingredients.put("xuetang", xuetangTemp);
             ingredients.put("xueya", xueyaTemp);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        try{
+        try {
             jsonObject.put(str, ingredients);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         String ans = jsonObject.toString();
-        Log.e("json", ans);
-        //TODO json转化为对象
-
-        //TODO 对象存入数据库
+//        Log.e("json", ans);
 
         //TODO 或者字符串存入sp
+        String before = pref.getString("shentiData", "{\"2017-05-14 16:53:38\":{\"jianshen\":\"1.69\",\"xinlv\":\"111\",\"xuetang\":\"2.27\",\"xueya\":\"129\"}}");
+        ans = ans + "+" + before;
+        editor.putString("shentiData", ans);
+        editor.apply();
 
-        return ans;
     }
 }

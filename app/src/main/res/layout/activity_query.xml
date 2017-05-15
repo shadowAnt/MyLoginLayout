@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="请输入要查询的序号区间" />
+            android:text="请输入要查询的时间区间" />
 
         <EditText
             android:id="@+id/startQuery"
