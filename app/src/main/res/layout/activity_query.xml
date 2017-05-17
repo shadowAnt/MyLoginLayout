@@ -10,31 +10,43 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.mylayout.QueryActivity">
 
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="请输入要查询的时间区间" />
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
+        <Button
+            android:id="@+id/choose_begin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="请输入要查询的时间区间" />
-
-        <EditText
-            android:id="@+id/startQuery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="起始序号" />
+            android:text="选择时间" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="~" />
+            android:id="@+id/beginTimeText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
-        <EditText
-            android:id="@+id/endQuery"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/choose_end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="终止序号" />
+            android:text="选择时间" />
+
+        <TextView
+            android:id="@+id/endTimeText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <Button
@@ -91,19 +103,18 @@
         android:layout_marginTop="5dp"
         android:background="#696969" />
 
-    <tech.linjiang.suitlines.SuitLines
-        xmlns:line="http://schemas.android.com/apk/res-auto"
+    <tech.linjiang.suitlines.SuitLines xmlns:line="http://schemas.android.com/apk/res-auto"
         android:id="@+id/QuerySuitlines"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_marginTop="10dp"
-        line:xySize="8"
-        line:xyColor="@color/colorAccent"
-        line:lineType="curve"
-        line:needEdgeEffect="true"
         line:colorEdgeEffect="@color/colorPrimaryDark"
-        line:needClickHint="true"
         line:colorHint="@color/colorPrimary"
+        line:countOfY="6"
+        line:lineType="curve"
         line:maxOfVisible="7"
-        line:countOfY="6"/>
+        line:needClickHint="true"
+        line:needEdgeEffect="true"
+        line:xyColor="@color/colorAccent"
+        line:xySize="8" />
 </LinearLayout>

@@ -90,8 +90,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         iconImage = (ImageView) view.findViewById(R.id.icon_image);
         gaosiLogin = (ImageView) view.findViewById(R.id.gaosi_login);
         editText = (EditText) view.findViewById(R.id.input_editText);
-
-
         pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         load_account_password();//加载用户名，根据上次保存密码与否进行读入密码
 
@@ -131,7 +129,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                     .bitmapTransform(new BlurTransformation(getActivity(), 23, 4)) // “23”：设置模糊度(在0.0到25.0之间)，默认”25";"4":图片缩放比例,默认“1”。
                     .into(gaosiLogin);
         }
-
         return view;
     }
 
@@ -148,10 +145,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                         .add("username", account)
                         .add("password", tmp)
                         .build();
-//                String url = "http://192.168.191.1/index.php";
-//                String url = "http://192.168.252.1:8080/population/AppLogin";
-//                String url = getString(R.string.URL);
-//                url += "/AppLogin";
                 String url = "http://" + input + ":8080/population/AppLogin";
                 //通过服务器上网
                 if (!(account.equals("123") && tmp.equals("123456"))) {
@@ -260,7 +253,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 "    \"patInfo\": {\n" +
                 "        \"patIdCard\": \"1111111\",\n" +
                 "        \"patName\": \"病人1\",\n" +
-                "        \"patAccount\": \"P1111111\"\n" +
+                "        \"patAccount\": \"" +
+                "P1111111\"\n" +
                 "    },\n" +
                 "    \"friends\": {\n" +
                 "        \"0\": {\n" +

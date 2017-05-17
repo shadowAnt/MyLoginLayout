@@ -54,4 +54,6 @@ dependencies {
 
     compile 'tech.linjiang:suitlines:1.0.0'
 
+    compile 'com.contrarywind:Android-PickerView:3.2.4'
+
 }

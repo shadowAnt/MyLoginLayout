@@ -65,7 +65,7 @@ public class FunActivity extends AppCompatActivity {
         float[] ans = initFunContent(funName);
         int lenOfAns = ans.length;
         for (int i = 0; i < lenOfAns; i++) {
-            contentText += i+"   "+timeKey[i] + "   :   " + ans[i] + "\n";
+            contentText += i + "   " + timeKey[i] + "   :   " + ans[i] + "\n";
         }
         funContentText.setText(contentText);
 

@@ -318,12 +318,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void sendRequestWithPost() {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         String url = pref.getString("URL", "");
+        url += "insertPatInfo";
+        String patId = "1111111";
         String shentiData = pref.getString("shentiData", "");
         JSONObject shentiJson = String2Json.string2json(shentiData);
         Log.e("url+shentiJson", url + "    " + shentiJson.toString());
 
-        /*
+
         RequestBody requestBody = new FormBody.Builder()
+                .add("patID", patId)
+                .add("info", shentiJson.toString())
                 .build();
         Post.sendOKHttpResquest(requestBody, url, new Callback() {
             @Override
@@ -352,7 +356,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 });
             }
         });
-        */
+
     }
 
     private void call() {
